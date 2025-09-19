@@ -9,7 +9,7 @@
 <!-- KaTeX -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  
+
 <!-- LZ-String -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 
@@ -124,18 +124,21 @@ button:hover{background:#1976d2;}
 </style>
 </head>
 <body>
+
 <h1>Création de Flash Cards</h1>
 
 <!-- Bibliothèque -->
 <h3>Bibliothèque</h3>
 <div class="row" style="justify-content:center; margin-bottom:15px;">
+  <!-- Menu déroulant Seconde -->
   <select id="secondeSelect">
-  <option value="">-- Seconde --</option>
-  <option value="./decks/seconde/seconde-chap1.json">Chapitre 1 : ---</option>
-  <option value="./decks/seconde/seconde-chap2.json">Chapitre 2 : ----</option>
-  <option value="./decks/seconde/seconde-chap3.json">Chapitre 3 : ----</option>
-</select>
-  <!--<button data-deck="./decks/seconde.json">Seconde</button>-->
+    <option value="">-- Seconde --</option>
+    <option value="./decks/seconde/seconde-chap1.json">Chapitre 1</option>
+    <option value="./decks/seconde/seconde-chap2.json">Chapitre 2</option>
+    <option value="./decks/seconde/seconde-chap3.json">Chapitre 3</option>
+  </select>
+
+  <!-- Autres boutons -->
   <button data-deck="./decks/premiere-specifique.json">Première Maths Spécifique</button>
   <button data-deck="./decks/premiere-spe.json">Première Spé Maths</button>
   <button data-deck="./decks/terminale-spe.json">Terminale Spé Maths</button>
@@ -147,15 +150,17 @@ button:hover{background:#1976d2;}
     <label>Nom du fichier : <input id="deckFileName" value="mes-cartes.json"></label>
   </div>
 
+  <!-- Ajouter carte -->
   <div class="card">
     <h3>Ajouter une carte</h3>
-    <label>Recto (texte, LaTeX ou image) :</label>
+    <label>Recto :</label>
     <textarea id="frontText" placeholder="Texte ou LaTeX"></textarea>
     <input type="file" id="frontImg" accept="image/*">
     
-    <label>Verso (texte, LaTeX ou image) :</label>
+    <label>Verso :</label>
     <textarea id="backText" placeholder="Texte ou LaTeX"></textarea>
     <input type="file" id="backImg" accept="image/*">
+
     <div class="row">
       <button id="addCardBtn">Ajouter la carte</button>
       <button id="exportFileBtn">Exporter .json</button>
@@ -171,6 +176,7 @@ button:hover{background:#1976d2;}
     <button id="startReviewBtn">Commencer la révision</button>
   </div>
 
+  <!-- Pop-up Révision -->
   <div id="reviewPopup">
     <div id="reviewCounter"></div>
     <button id="closeReviewBtn">&times;</button>
@@ -194,6 +200,7 @@ button:hover{background:#1976d2;}
 <div id="signature">Margaux THOMAS Lycée RENOIR</div>
 
 <script>
+/* ---------------- Variables ---------------- */
 const deckFileNameInput = document.getElementById('deckFileName');
 const frontText = document.getElementById('frontText');
 const backText = document.getElementById('backText');
@@ -204,7 +211,6 @@ const cardsList = document.getElementById('cardsList');
 const exportFileBtn = document.getElementById('exportFileBtn');
 const importFileInput = document.getElementById('importFile');
 const resetDeckBtn = document.getElementById('resetDeckBtn');
-
 const startReviewBtn = document.getElementById('startReviewBtn');
 const reviewPopup = document.getElementById('reviewPopup');
 const reviewCardContainer = document.getElementById('reviewCardContainer');
@@ -213,6 +219,7 @@ const reviewCounter = document.getElementById('reviewCounter');
 const correctBtn = document.querySelector('#reviewButtons .correct');
 const incorrectBtn = document.querySelector('#reviewButtons .incorrect');
 const closeReviewBtn = document.getElementById('closeReviewBtn');
+const secondeSelect = document.getElementById("secondeSelect");
 
 let currentDeck = {name:'Mon deck', cards:[]};
 let reviewDeck = [];
@@ -220,28 +227,43 @@ let currentReviewIndex = 0;
 let correctCount = 0;
 let incorrectCount = 0;
 
-// --- Charger un deck depuis un fichier JSON ---
-function loadDeck(url) {
-    fetch(url)
-        .then(res => res.json())
-        .then(deck => {
-            currentDeck = deck;
-            deckFileNameInput.value = url.split('/').pop();
-            renderFlashcards();
-            alert("Deck chargé : " + deckFileNameInput.value);
-        })
-        .catch(err => alert("Impossible de charger le deck : " + err));
+/* ---------------- Fonctions ---------------- */
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+function splitWithTex(s){
+  const res=[]; const regex=/\$(.+?)\$/g;
+  let last=0,m;
+  while((m=regex.exec(s))!==null){
+    if(m.index>last) res.push({type:'text', text:s.slice(last,m.index)});
+    res.push({type:'tex', text:m[1]});
+    last=m.index+m[0].length;
+  }
+  if(last<s.length) res.push({type:'text', text:s.slice(last)});
+  return res;
 }
 
-// --- Boutons des decks ---
-document.querySelectorAll('button[data-deck]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const url = btn.getAttribute('data-deck');
-        loadDeck(url);
+function renderPreviews(){
+  document.querySelectorAll('.preview').forEach(span=>{
+    const raw = span.getAttribute('data-text')||'';
+    const imgSrc = span.getAttribute('data-img')||'';
+    span.innerHTML='';
+    if(imgSrc){
+      const img=document.createElement('img');
+      img.src=imgSrc;
+      span.appendChild(img);
+    }
+    const parts = splitWithTex(raw);
+    parts.forEach(p=>{
+      if(p.type==='tex'){
+        try{
+          const node=document.createElement('span');
+          katex.render(p.text,node,{throwOnError:false});
+          span.appendChild(node);
+        }catch(e){ span.appendChild(document.createTextNode(p.text)); }
+      } else span.appendChild(document.createTextNode(p.text));
     });
-});
-
-function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+  });
+}
 
 function renderFlashcards(){
   cardsList.innerHTML='';
@@ -259,7 +281,6 @@ function renderFlashcards(){
   renderPreviews();
 }
 
-// Ajouter une carte
 function readFileAsDataURL(file){
   return new Promise((res, rej)=>{
     const reader = new FileReader();
@@ -269,6 +290,60 @@ function readFileAsDataURL(file){
   });
 }
 
+function loadDeck(url){
+  fetch(url)
+    .then(res=>res.json())
+    .then(deck=>{
+      currentDeck = deck;
+      deckFileNameInput.value = url.split('/').pop();
+      renderFlashcards();
+      alert("Deck chargé : " + deckFileNameInput.value);
+    })
+    .catch(err=>alert("Impossible de charger le deck : " + err));
+}
+
+function shuffleArray(array){ return array.sort(()=>Math.random()-0.5); }
+
+function showReviewCard(){
+  if(currentReviewIndex>=reviewDeck.length) return;
+  const c = reviewDeck[currentReviewIndex];
+  const frontDiv = reviewCard.querySelector('.front');
+  const backDiv = reviewCard.querySelector('.back');
+  frontDiv.setAttribute('data-text', c.front||'');
+  frontDiv.setAttribute('data-img', c.frontImg||'');
+  backDiv.setAttribute('data-text', c.back||'');
+  backDiv.setAttribute('data-img', c.backImg||'');
+  reviewCardContainer.classList.remove('flipped');
+  reviewCounter.textContent=`Justes: ${correctCount} | Faux: ${incorrectCount} | Restantes: ${reviewDeck.length-currentReviewIndex}`;
+  renderPreviews();
+}
+
+function nextReview(correct){
+  if(correct) correctCount++; else incorrectCount++;
+  currentReviewIndex++;
+  if(currentReviewIndex>=reviewDeck.length){
+    alert(`Révision terminée !\nJustes: ${correctCount}, Faux: ${incorrectCount}`);
+    reviewPopup.style.display='none';
+    return;
+  }
+  showReviewCard();
+}
+
+/* ---------------- Événements ---------------- */
+// Sélecteur Seconde
+secondeSelect.addEventListener("change", () => {
+  const url = secondeSelect.value;
+  if(url) loadDeck(url);
+});
+
+// Boutons autres decks
+document.querySelectorAll('button[data-deck]').forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    loadDeck(btn.getAttribute('data-deck'));
+  });
+});
+
+// Ajouter carte
 addCardBtn.onclick = async ()=>{
   const front = frontText.value.trim();
   const back = backText.value.trim();
@@ -314,6 +389,7 @@ importFileInput.addEventListener('change', e=>{
   reader.readAsText(file);
 });
 
+// Réinitialiser
 resetDeckBtn.onclick = ()=>{
   if(confirm("Réinitialiser le deck ?")){
     currentDeck={name:'Mon deck', cards:[]};
@@ -322,58 +398,7 @@ resetDeckBtn.onclick = ()=>{
   }
 };
 
-// --- Révision ---
-function shuffleArray(array){ return array.sort(()=>Math.random()-0.5); }
-
-function renderPreviews(){
-  document.querySelectorAll('.preview').forEach(span=>{
-    const raw = span.getAttribute('data-text')||'';
-    const imgSrc = span.getAttribute('data-img')||'';
-    span.innerHTML='';
-    if(imgSrc){
-      const img=document.createElement('img');
-      img.src=imgSrc;
-      span.appendChild(img);
-    }
-    const parts = splitWithTex(raw);
-    parts.forEach(p=>{
-      if(p.type==='tex'){
-        try{
-          const node=document.createElement('span');
-          katex.render(p.text,node,{throwOnError:false});
-          span.appendChild(node);
-        }catch(e){ span.appendChild(document.createTextNode(p.text)); }
-      } else span.appendChild(document.createTextNode(p.text));
-    });
-  });
-}
-
-function splitWithTex(s){
-  const res=[]; const regex=/\$(.+?)\$/g;
-  let last=0,m;
-  while((m=regex.exec(s))!==null){
-    if(m.index>last) res.push({type:'text', text:s.slice(last,m.index)});
-    res.push({type:'tex', text:m[1]});
-    last=m.index+m[0].length;
-  }
-  if(last<s.length) res.push({type:'text', text:s.slice(last)});
-  return res;
-}
-
-function showReviewCard(){
-  if(currentReviewIndex>=reviewDeck.length) return;
-  const c=reviewDeck[currentReviewIndex];
-  const frontDiv = reviewCard.querySelector('.front');
-  const backDiv = reviewCard.querySelector('.back');
-  frontDiv.setAttribute('data-text', c.front||'');
-  frontDiv.setAttribute('data-img', c.frontImg||'');
-  backDiv.setAttribute('data-text', c.back||'');
-  backDiv.setAttribute('data-img', c.backImg||'');
-  reviewCardContainer.classList.remove('flipped');
-  reviewCounter.textContent=`Justes: ${correctCount} | Faux: ${incorrectCount} | Restantes: ${reviewDeck.length-currentReviewIndex}`;
-  renderPreviews();
-}
-
+// Révision
 startReviewBtn.onclick = ()=>{
   if(currentDeck.cards.length===0){ alert("Pas de cartes !"); return; }
   reviewDeck = shuffleArray([...currentDeck.cards]);
@@ -383,53 +408,17 @@ startReviewBtn.onclick = ()=>{
 };
 
 reviewCardContainer.onclick = ()=> reviewCardContainer.classList.toggle('flipped');
-
-function nextReview(correct){
-  if(correct) correctCount++; else incorrectCount++;
-  currentReviewIndex++;
-  if(currentReviewIndex>=reviewDeck.length){
-    alert(`Révision terminée !\nJustes: ${correctCount}, Faux: ${incorrectCount}`);
-    reviewPopup.style.display='none';
-    return;
-  }
-  showReviewCard();
-}
-
 correctBtn.onclick = ()=> nextReview(true);
 incorrectBtn.onclick = ()=> nextReview(false);
 closeReviewBtn.onclick = ()=> reviewPopup.style.display='none';
 
-(function init(){ renderFlashcards();
+/* ---------------- Init ---------------- */
+(function init(){
+  renderFlashcards();
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').then(()=>console.log('SW enregistré'));
   }
 })();
-
-
-  const secondeSelect = document.getElementById("secondeSelect");
-
-if (secondeSelect) {
-  secondeSelect.addEventListener("change", () => {
-    const url = secondeSelect.value;
-    if (url) loadDeck(url); // tu utilises déjà loadDeck(url)
-  });
-}
-
-
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
