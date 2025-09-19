@@ -404,9 +404,21 @@ closeReviewBtn.onclick = ()=> reviewPopup.style.display='none';
     navigator.serviceWorker.register('sw.js').then(()=>console.log('SW enregistré'));
   }
 })();
+
+
+  const secondeSelect = document.getElementById("secondeSelect");
+
+if (secondeSelect) {
+  secondeSelect.addEventListener("change", () => {
+    const url = secondeSelect.value;
+    if (url) loadDeck(url); // tu utilises déjà loadDeck(url)
+  });
+}
+
 </script>
 </body>
 </html>
+
 
 
 
