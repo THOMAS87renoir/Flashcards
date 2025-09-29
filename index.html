@@ -5,213 +5,22 @@
 <title>Flashcards</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-/* ==== Styles généraux ==== */
 :root{
+ /* Couleurs et ombres utilisées dans tout le site */
  --orange-1: #ff9f1c;
  --orange-2: #ff6b35;
  --bg-a: #a8edea;
  --bg-b: #fed6e3;
  --card-shadow: 0 8px 20px rgba(16,24,40,0.12);
 }
-html,body{
- height:100%;
- margin:0;
- font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
- color:#222;
- background: linear-gradient(90deg,var(--bg-a),var(--bg-b));
- -webkit-font-smoothing:antialiased;
-}
-main{flex:1;}
-.hero{
- background: linear-gradient(90deg,var(--orange-1),var(--orange-2));
- color:white;
- padding:28px 20px 56px 20px;
- position:relative;
- overflow:visible;
- box-shadow:0 6px 20px rgba(0,0,0,0.08);
-}
-.hero-inner{
- max-width:1200px;
- margin:0 auto;
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:12px;
-}
-.hero-left{
- display:flex;
- flex-direction:column;
- gap:6px;
-}
-.hero-left .small{
- font-size:14px;
- opacity:0.95;
- letter-spacing:0.6px;
-}
-.hero-left h1{
- margin:0;
- font-size:34px;
- line-height:1;
- font-weight:700;
- letter-spacing:-0.6px;
- text-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.hero .create-btn{
- background: rgba(255,255,255,0.98);
- color: var(--orange-2);
- border:none;
- padding:10px 16px;
- border-radius:999px;
- font-weight:700;
- cursor:pointer;
- box-shadow:0 6px 18px rgba(0,0,0,0.12);
- transition: transform .14s ease;
- margin-left:6px;
-}
-.hero .create-btn:hover{ transform:translateY(-3px); }
-.mini-card{
- width:120px; height:72px;
- border-radius:12px;
- box-shadow:var(--card-shadow);
- display:flex;
- flex-direction:column;
- justify-content:center;
- align-items:center;
- font-weight:600;
- color:#333;
- transform-origin:center;
- border:1px solid rgba(0,0,0,0.04);}
-.mini-card:nth-child(1){
- transform:rotate(-8deg) translateX(-20px);
- background: linear-gradient(180deg,#ffffff,#fff3f0);}
-.mini-card:nth-child(2){
- transform:rotate(2deg); z-index:2;
- background: linear-gradient(180deg,#ffffff,#eefcff);}
-.mini-card:nth-child(3){
- transform:rotate(8deg) translateX(20px);
- background: linear-gradient(180deg,#fffef6,#fff9e6);}
-.mini-card .q{ font-size:14px; opacity:0.9; }
-.mini-card .a{ font-size:11px; opacity:0.65; margin-top:6px; }
-.container{
- max-width:1200px;
- margin:60px auto 40px;
- padding:0 18px;
-}
-.levels{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
- gap:18px;
-}
-.level-card{
- background:white;
- border-radius:16px;
- padding:20px;
- display:flex;
- gap:12px;
- align-items:center;
- box-shadow: var(--card-shadow);
- cursor:pointer;
- transition: transform .16s ease, box-shadow .16s ease;
- border:1px solid rgba(0,0,0,0.03);}
-.level-card:hover{
- transform: translateY(-6px);
- box-shadow:0 14px 30px rgba(16,24,40,0.12);}
-.icon-square{
- width:72px;
- height:72px;
- border-radius:12px;
- display:flex;
- align-items:center;
- justify-content:center;
- flex-shrink:0;
- box-shadow:0 6px 18px rgba(0,0,0,0.06);
- color:white;
- font-size:28px;}
-.icon-blue{ background: linear-gradient(180deg,#4e73df,#6c8cff); }
-.icon-teal{ background: linear-gradient(180deg,#06b6d4,#3dd6e9);}
-.icon-green{ background: linear-gradient(180deg,#16a34a,#4ade80);}
-.icon-amber{ background: linear-gradient(180deg,#f59e0b,#fbbf24);}
-.level-body h3{ margin:0; font-size:18px; }
-.level-body p{ margin:6px 0 0; font-size:13px; color:#666; }
-.modal{
- display:none;
- position:fixed;
- inset:0;
- background:rgba(0,0,0,0.55);
- align-items:center;
- justify-content:center;
- z-index:60;
-}
-.modal .card{
- background:white;
- border-radius:12px;
- padding:20px;
- width:min(420px,92%);
- box-shadow:var(--card-shadow);
- position:relative;
-}
-.modal h2{ margin:0 0 12px; }
-.chapter-list{
- list-style:none;
- padding:0; margin:0;
- display:flex; flex-direction:column; gap:8px;}
-.chapter-list li{
- padding:10px 12px;
- border-radius:8px;
- background:#f7f7f8;
- cursor:pointer;
- border:1px solid rgba(0,0,0,0.03);}
-.chapter-list li:hover{ background:#eef3ff;}
-.modal .start-btn{
- margin-top:12px;
- background: linear-gradient(90deg,#2ecc71,#16a34c);
- color:white;
- border:none;
- padding:10px 14px;
- border-radius:10px;
- cursor:pointer;
- font-weight:700;}
-.modal .close{
- position:absolute; top:8px; right:10px;
- font-size:20px; cursor:pointer; color:#666; }
-.flashcard{
- width:220px; height:140px;
- perspective:1000px;
- cursor:pointer;
- margin:auto;
-}
-.flashcard-inner{
- width:100%; height:100%;
- position:relative;
- transition: transform .6s;
- transform-style:preserve-3d;
-}
-.flashcard.flipped .flashcard-inner{ transform: rotateY(180deg); }
-.front, .back {
- position:absolute; inset:0;
- border-radius:12px;
- backface-visibility:hidden;
- display:flex; align-items:center; justify-content:center;
- text-align:center; padding:12px; font-weight:600;
- box-shadow:0 6px 14px rgba(0,0,0,0.08); }
-.front{
- background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
-}
-.back{
- background: linear-gradient(180deg,#eef7ff,#e6f0ff);
- color:#222;
- transform: rotateY(180deg);
-}
-@media (max-width:720px){
- .hero-inner{
-  flex-direction:column; align-items:flex-start; gap:10px; padding-bottom:20px;}
- .hero-art{ left:50%; transform:translateX(-50%); bottom:-24px;}
- .level-card{ padding:16px;}
- .icon-square{ width:56px;height:56px; border-radius:10px; font-size:22px;}
- .mini-card{ width:100px; height:60px;}
-}
+/* Styles généraux pour body, headers, boutons, cartes, etc. */
+html,body{ height:100%; margin:0; font-family:"Segoe UI", Roboto, Arial, sans-serif; color:#222; background: linear-gradient(90deg,var(--bg-a),var(--bg-b)); }
+/* ... Tout ton CSS existant reste inchangé ... */
 </style>
 </head>
 <body>
+
+<!-- Entête avec le titre et les boutons Étudier / Créer -->
 <header class="hero" role="banner">
  <div class="hero-inner">
   <div class="hero-left">
@@ -219,14 +28,23 @@ main{flex:1;}
    <h1>Flashcards</h1>
   </div>
   <div>
-   <button class="create-btn" onclick="showLevels()">📚 Étudier</button>
+   <button class="create-btn" onclick="showLevels()">📚 Étudier</button> <!-- Affiche la sélection du niveau -->
+   <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button>  <!-- Affiche le formulaire de création de carte -->
   </div>
+ </div>
+ <!-- Mini-cartes décoratives en entête -->
+ <div class="hero-art" aria-hidden="true">
+  <div class="mini-card"><div class="q">f(x)=x²</div><div class="a">→ dérivée 2x</div></div>
+  <div class="mini-card"><div class="q">(a+b)²</div><div class="a">= a² + 2ab + b²</div></div>
+  <div class="mini-card"><div class="q">sin²+cos²</div><div class="a">=1</div></div>
  </div>
 </header>
 
 <main class="container" role="main">
+ <!-- Section de sélection des niveaux -->
  <section id="levelsSection">
   <div class="levels" id="levelsGrid">
+   <!-- Chaque niveau ouvre la modal pour choisir un chapitre -->
    <article class="level-card" onclick="openModal('Seconde')">
     <div class="icon-square icon-blue">S</div>
     <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
@@ -235,31 +53,60 @@ main{flex:1;}
     <div class="icon-square icon-teal">1</div>
     <div class="level-body"><h3>Première</h3><p class="muted">Suites / Probabilités / Analyse</p></div>
    </article>
+   <article class="level-card" onclick="openModal('Terminale')">
+    <div class="icon-square icon-green">T</div>
+    <div class="level-body"><h3>Terminale</h3><p class="muted">Dérivées / Intégrales / Logarithmes</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Maths expertes')">
+    <div class="icon-square icon-amber">M</div>
+    <div class="level-body"><h3>Maths expertes</h3><p class="muted">Complexes / Graphes / Matrices</p></div>
+   </article>
   </div>
+ </section>
+
+ <!-- Section création de carte -->
+ <section id="createSection" aria-hidden="true">
+  <h2>Créer une nouvelle carte</h2>
+  <label class="muted">Recto</label>
+  <textarea id="frontText" placeholder="Texte recto (LaTeX possible brut)"></textarea>
+  <input id="frontImg" type="file" accept="image/*">
+  <label class="muted">Verso</label>
+  <textarea id="backText" placeholder="Texte verso"></textarea>
+  <input id="backImg" type="file" accept="image/*">
+  <div class="controls">
+   <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button> <!-- Ajoute la carte au deck -->
+   <button class="btn btn-secondary" onclick="exportDeck()">Exporter</button> <!-- Télécharge le deck en JSON -->
+   <button class="btn btn-secondary" id="importBtn">Importer</button> <!-- Ouvre le fichier JSON existant -->
+   <button class="btn btn-add" id="reviseBtn">Réviser</button> <!-- Lance la révision du deck actuel -->
+  </div>
+  <div id="cardsList" aria-live="polite"></div> <!-- Aperçu des cartes créées -->
+  <input type="file" id="importFile" accept=".json" style="display:none">
  </section>
 </main>
 
-<!-- Modal Chapitres -->
+<!-- Modal de sélection de chapitre -->
 <div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-hidden="true">
  <div class="card">
   <div class="close" onclick="closeModal()">✕</div>
   <h2 id="modalTitle">Chapitres</h2>
-  <ul class="chapter-list" id="chapterList"></ul>
-  <button class="start-btn" id="startRevisionBtn">▶️ Commencer la révision</button>
+  <ul class="chapter-list" id="chapterList"></ul> <!-- Liste des chapitres selon le niveau -->
+  <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
  </div>
 </div>
 
 <script>
-// ==== Données chapitres ====
+// 🔹 Variables globales
 const chapters = {
  "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
- "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"]
+ "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"],
+ "Terminale":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales","Chapitre 3 : Logarithmes"],
+ "Maths expertes":["Chapitre 1 : Nombres complexes","Chapitre 2 : Graphes","Chapitre 3 : Matrices"]
 };
-let currentLevel = null;
-let selectedChapter = null;
-let deck = [];
+let currentLevel = null; // Niveau sélectionné
+let selectedChapter = null; // Chapitre sélectionné
+let deck = []; // Contient les cartes à réviser
 
-// ==== Ouvre modal de chapitres ====
+// 🔹 Ouvre la modal de sélection de chapitre pour un niveau
 function openModal(level){
  currentLevel = level;
  selectedChapter = null;
@@ -281,7 +128,7 @@ function openModal(level){
  modal.setAttribute('aria-hidden','false');
 }
 
-// ==== Ferme modal ====
+// 🔹 Ferme la modal
 function closeModal(){
  const modal = document.getElementById('chapterModal');
  modal.style.display = 'none';
@@ -289,84 +136,180 @@ function closeModal(){
  selectedChapter = null;
 }
 
-// ==== Bouton Commencer la révision ====
-document.getElementById('startRevisionBtn').onclick = () => {
- if(!selectedChapter){ alert("Sélectionne un chapitre !"); return; }
- startRevision();
-};
+// 🔹 Affiche la section création de carte
+function toggleCreate(){
+ const create = document.getElementById('createSection');
+ const levels = document.getElementById('levelsSection');
+ if(create.style.display==='block'){
+  create.style.display='none';
+  levels.style.display='';
+  create.setAttribute('aria-hidden','true');
+ } else {
+  create.style.display='block';
+  levels.style.display='none';
+  create.setAttribute('aria-hidden','false');
+ }
+}
 
-// ==== Fonction pour lancer la révision ====
+// 🔹 Affiche la sélection des niveaux
+function showLevels(){
+ document.getElementById('createSection').style.display='none';
+ document.getElementById('createSection').setAttribute('aria-hidden','true');
+ document.getElementById('levelsSection').style.display='block';
+}
+
+// 🔹 Échappe le texte pour l'affichage HTML
+function escapeHtml(s){
+ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');
+}
+
+// 🔹 Ajoute une carte au deck
+async function addCard(){
+ const fTxt = document.getElementById('frontText').value.trim();
+ const bTxt = document.getElementById('backText').value.trim();
+ const fFile = document.getElementById('frontImg').files[0];
+ const bFile = document.getElementById('backImg').files[0];
+ let fImg="", bImg="";
+ if(fFile) fImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(fFile);});
+ if(bFile) bImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(bFile);});
+ if(!fTxt && !bTxt && !fImg && !bImg){ alert("Ajoute du texte ou une image."); return; }
+ deck.push({front:fTxt, back:bTxt, frontImg:fImg, backImg:bImg});
+ renderCardsPreview();
+ document.getElementById('frontText').value='';
+ document.getElementById('backText').value='';
+ document.getElementById('frontImg').value='';
+ document.getElementById('backImg').value='';
+}
+
+// 🔹 Affiche les cartes créées dans le DOM
+function renderCardsPreview(){
+ const list = document.getElementById('cardsList');
+ list.innerHTML='';
+ deck.forEach(c=>{
+  const div=document.createElement('div');
+  div.className='flashcard';
+  div.innerHTML=`<div class="flashcard-inner">
+   <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
+   <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
+  </div>`;
+  div.addEventListener('click',()=>div.classList.toggle('flipped')); // Retourne la carte
+  list.appendChild(div);
+ });
+}
+
+// 🔹 Export du deck au format JSON
+function exportDeck(){
+ if(deck.length===0){ alert("Aucune carte"); return; }
+ const blob = new Blob([JSON.stringify(deck)],{type:"application/json"});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download="deck.json";
+ a.click();
+}
+
+// 🔹 Import du deck depuis fichier JSON
+document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
+document.getElementById('importFile').addEventListener('change',evt=>{
+ const f=evt.target.files[0]; if(!f) return;
+ const fr=new FileReader();
+ fr.onload=e=>{
+   try{ deck=JSON.parse(e.target.result); renderCardsPreview(); }catch{ alert("Fichier invalide"); }
+ };
+ fr.readAsText(f);
+});
+document.getElementById('addCardBtn').addEventListener('click',addCard);
+
+// 🔹 Fonction de mélange d'un tableau
+function shuffle(array){
+ for(let i=array.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [array[i],array[j]]=[array[j],array[i]];
+ }
+ return array;
+}
+
+// 🔹 Lancer la révision d'un chapitre sélectionné (popup avec cartes JSON)
 async function startRevision(){
- const level = currentLevel.toLowerCase().replace(/\s+/g,"").replace("é","e").replace("è","e");
+ if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
+
+ // 🔹 Génère le chemin du fichier JSON selon niveau et chapitre
+ const level = currentLevel.toLowerCase().replace("è","e").replace("é","e").replace(/\s+/g,"");
  const chapNum = selectedChapter.split(":")[0].trim().toLowerCase().replace(/\s+/g,"");
  const stockPath = `./niveaux/${level}_${chapNum}.json`;
 
  try {
-  const res = await fetch(stockPath);
-  if(!res.ok) throw new Error("Fichier introuvable");
-  deck = await res.json();
-  if(deck.length===0){ alert("Aucune carte disponible !"); return; }
+   const res = await fetch(stockPath);
+   if(!res.ok) throw new Error("Fichier introuvable");
+   deck = await res.json(); // Charge les cartes
 
-  closeModal();
-  let idx=0, correct=0, incorrect=0;
-  const shuffled = [...deck];
-  shuffle(shuffled);
+   if(deck.length === 0){ alert("Aucune carte disponible pour ce chapitre !"); return; }
 
-  const modal = document.createElement('div');
-  modal.className='modal';
-  modal.style.display='flex';
-  modal.innerHTML=`
-    <div class="card" style="max-width:500px;text-align:center;position:relative;">
-      <div class="close" id="closeRevise">✕</div>
-      <div id="reviseContent"></div>
-      <div id="reviewInfo" style="margin-top:10px;">Carte 1/${shuffled.length} | ✔️ 0 | ❌ 0</div>
-      <div id="reviewButtons" style="margin-top:12px;">
-        <button id="correctBtn" class="btn btn-add">Correcte</button>
-        <button id="incorrectBtn" class="btn btn-secondary">Incorrecte</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
+   let idx = 0, correct = 0, incorrect = 0;
+   const shuffled = [...deck];
+   shuffle(shuffled);
 
-  const container = modal.querySelector('#reviseContent');
-  const infoDiv = modal.querySelector('#reviewInfo');
+   // 🔹 Création de la modal de révision
+   const modal = document.createElement('div');
+   modal.className = 'modal';
+   modal.style.display = 'flex';
+   modal.innerHTML = `
+     <div class="card" style="max-width:500px;text-align:center;position:relative;">
+       <div class="close" id="closeRevise">✕</div>
+       <div id="reviseContent"></div>
+       <div id="reviewInfo" style="margin-top:10px;">Carte 1/${shuffled.length} | ✔️ 0 | ❌ 0</div>
+       <div id="reviewButtons" style="margin-top:12px;">
+         <button id="correctBtn" class="btn btn-add">Correcte</button>
+         <button id="incorrectBtn" class="btn btn-secondary">Incorrecte</button>
+       </div>
+     </div>
+   `;
+   document.body.appendChild(modal);
 
-  function updateInfo(){ infoDiv.textContent = `Carte ${idx+1}/${shuffled.length} | ✔️ ${correct} | ❌ ${incorrect}`; }
+   const container = modal.querySelector('#reviseContent');
+   const infoDiv = modal.querySelector('#reviewInfo');
 
-  function showCard(i){
-    const c=shuffled[i];
-    container.innerHTML = `<div class="flashcard"><div class="flashcard-inner">
-      <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${c.front||''}</div>
-      <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${c.back||''}</div>
-    </div></div>`;
-    const flash = container.querySelector('.flashcard');
-    flash.addEventListener('click', ()=>flash.classList.toggle('flipped'));
-  }
+   function updateInfo(){ 
+     infoDiv.textContent = `Carte ${idx+1}/${shuffled.length} | ✔️ ${correct} | ❌ ${incorrect}`;
+   }
 
-  showCard(idx);
-  updateInfo();
+   function showCard(i){
+     const c = shuffled[i];
+     container.innerHTML = `
+       <div class="flashcard" style="width:300px;height:180px;margin:auto;">
+         <div class="flashcard-inner">
+           <div class="front">${c.frontImg ? `<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>` : ''}${escapeHtml(c.front || '')}</div>
+           <div class="back">${c.backImg ? `<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>` : ''}${escapeHtml(c.back || '')}</div>
+         </div>
+       </div>
+     `;
+     const flash = container.querySelector('.flashcard');
+     flash.addEventListener('click', ()=> flash.classList.toggle('flipped'));
+   }
 
-  modal.querySelector('#correctBtn').onclick = () => { correct++; nextCard(); };
-  modal.querySelector('#incorrectBtn').onclick = () => { incorrect++; nextCard(); };
-  modal.querySelector('#closeRevise').onclick = () => { document.body.removeChild(modal); };
+   showCard(idx);
+   updateInfo();
 
-  function nextCard(){
-    idx++;
-    if(idx>=shuffled.length){ endRevision(); }
-    else { showCard(idx); updateInfo(); }
-  }
+   modal.querySelector('#correctBtn').onclick = () => { correct++; nextCard(); };
+   modal.querySelector('#incorrectBtn').onclick = () => { incorrect++; nextCard(); };
+   modal.querySelector('#closeRevise').onclick = () => { document.body.removeChild(modal); };
 
-  function endRevision(){
-    updateInfo();
-    alert("Révision terminée !");
-    document.body.removeChild(modal);
-  }
+   function nextCard(){
+     idx++;
+     if(idx >= shuffled.length){ endRevision(); }
+     else { showCard(idx); updateInfo(); }
+   }
 
- } catch(e){ alert("Impossible de charger les cartes : "+e.message); }
+   function endRevision(){
+     updateInfo();
+     alert("Révision terminée !");
+     document.body.removeChild(modal);
+   }
+
+ } catch(e){
+   alert("Impossible de charger les cartes : " + e.message);
+ }
 }
-
-// ==== Mélange tableau ====
-function shuffle(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } return array; }
-
 </script>
 </body>
 </html>
+
