@@ -336,6 +336,15 @@ let currentLevel = null;
 let selectedChapter = null;
 let deck = [];
 
+// ✅ Cartes par chapitre
+const chapterDecks = {
+  "Seconde Chapitre 1 : Bases": [
+    { "front": "f(x) = x²", "back": "→ dérivée 2x", "frontImg": "", "backImg": "" },
+    { "front": "(a+b)²", "back": "a² + 2ab + b²", "frontImg": "", "backImg": "" },
+    { "front": "sin²+cos²", "back": "=1", "frontImg": "", "backImg": "" }
+  ]
+};
+
 function openModal(level){
  currentLevel = level;
  selectedChapter = null;
@@ -356,19 +365,33 @@ function openModal(level){
  modal.style.display = 'flex';
  modal.setAttribute('aria-hidden','false');
 }
+
 function closeModal(){
  const modal = document.getElementById('chapterModal');
  modal.style.display = 'none';
  modal.setAttribute('aria-hidden','true');
  selectedChapter = null;
 }
+
+// ✅ startRevision modifié pour charger le chapitre
 function startRevision(){
- if(!selectedChapter){
-  alert("Sélectionne un chapitre"); return;
- }
- alert("Démarrage : "+currentLevel+" — "+selectedChapter);
- closeModal();
+  if(!selectedChapter){
+    alert("Sélectionne un chapitre"); 
+    return;
+  }
+
+  const key = currentLevel + " " + selectedChapter;
+  
+  if(chapterDecks[key]){
+    deck = [...chapterDecks[key]];
+    renderCardsPreview();
+    closeModal();
+    alert("Cartes chargées : " + key);
+  } else {
+    alert("Aucune carte disponible pour " + key);
+  }
 }
+
 function toggleCreate(){
  const create = document.getElementById('createSection');
  const levels = document.getElementById('levelsSection');
@@ -439,7 +462,7 @@ document.getElementById('importFile').addEventListener('change',evt=>{
 });
 document.getElementById('addCardBtn').addEventListener('click',addCard);
 
-/* Révision avec mélange + compteur + progression + confettis */
+// Révision existante (inchangée)
 function shuffle(array){
  for(let i=array.length-1;i>0;i--){
   const j=Math.floor(Math.random()*(i+1));
@@ -542,17 +565,11 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
       c.style.borderRadius='50%';
       c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
       confetti.appendChild(c);
-      setTimeout(()=>{
-        c.style.top=window.innerHeight+'px';
-        c.style.opacity=0;
-        c.style.transform=`rotate(${Math.random()*720}deg)`;
-      },10);
+      setTimeout(()=>{ c.style.top=window.innerHeight+'px'; c.style.opacity=0; c.style.transform=`rotate(${Math.random()*720}deg)`; },10);
     }
     setTimeout(()=>{ document.body.removeChild(confetti); },3000);
     alert("Félicitations ! Toutes les cartes sont correctes 🎉");
-  } else {
-    alert("Révision terminée !");
-  }
+  } else { alert("Révision terminée !"); }
 
   document.body.removeChild(modal);
  }
