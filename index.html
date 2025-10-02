@@ -88,7 +88,7 @@ main{flex:1;}
  font-weight:600;
  color:#333;
  transform-origin:center;
- border:1px solid rgba(0,0,0,0.04); }
+ border:1px solid rgba(0,0,0,0.04);}
 .mini-card:nth-child(1){
  transform:rotate(-8deg) translateX(-20px);
  background: linear-gradient(180deg,#ffffff,#fff3f0);}
@@ -241,7 +241,7 @@ input[type=file]{ display:block; }
  backface-visibility:hidden;
  display:flex; align-items:center; justify-content:center;
  text-align:center; padding:12px; font-weight:600;
- box-shadow:0 6px 14px rgba(0,0,0,0.08); }
+ box-shadow:0 6px 14px rgba(0,0,0,0.08);}
 .front{
  background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
 }
@@ -293,16 +293,12 @@ input[type=file]{ display:block; }
     <div class="icon-square icon-green">T</div>
     <div class="level-body"><h3>Terminale</h3><p class="muted">Dérivées / Intégrales / Logarithmes</p></div>
    </article>
-   <article class="level-card" onclick="openModal('Maths expertes')">
-    <div class="icon-square icon-amber">M</div>
-    <div class="level-body"><h3>Maths expertes</h3><p class="muted">Complexes / Graphes / Matrices</p></div>
-   </article>
   </div>
  </section>
  <section id="createSection" aria-hidden="true">
-  <h2>Créer une nouvelle carte</h2>
+  <h2>Créer / Réviser les cartes</h2>
   <label class="muted">Recto</label>
-  <textarea id="frontText" placeholder="Texte recto (LaTeX possible brut)"></textarea>
+  <textarea id="frontText" placeholder="Texte recto"></textarea>
   <input id="frontImg" type="file" accept="image/*">
   <label class="muted">Verso</label>
   <textarea id="backText" placeholder="Texte verso"></textarea>
@@ -325,22 +321,19 @@ input[type=file]{ display:block; }
   <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
  </div>
 </div>
-
 <script>
 const chapters = {
  "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
  "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"],
- "Terminale":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales","Chapitre 3 : Logarithmes"],
- "Maths expertes":["Chapitre 1 : Nombres complexes","Chapitre 2 : Graphes","Chapitre 3 : Matrices"]
+ "Terminale":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales","Chapitre 3 : Logarithmes"]
 };
 
-// ✅ deck pour chaque chapitre
 const chapterDecks = {
-  "Seconde Chapitre 1 : Bases": [
-    { front:"f(x)=x²", back:"→ dérivée 2x", frontImg:"", backImg:"" },
-    { front:"(a+b)²", back:"a² + 2ab + b²", frontImg:"", backImg:"" },
-    { front:"sin²+cos²", back:"=1", frontImg:"", backImg:"" }
-  ]
+ "Seconde Chapitre 1 : Bases":[
+   { front:"f(x)=x²", back:"→ dérivée 2x", frontImg:"", backImg:"" },
+   { front:"(a+b)²", back:"= a² + 2ab + b²", frontImg:"", backImg:"" },
+   { front:"sin²+cos²", back:"=1", frontImg:"", backImg:"" }
+ ]
 };
 
 let currentLevel = null;
@@ -367,6 +360,7 @@ function openModal(level){
  modal.style.display = 'flex';
  modal.setAttribute('aria-hidden','false');
 }
+
 function closeModal(){
  const modal = document.getElementById('chapterModal');
  modal.style.display = 'none';
@@ -374,20 +368,14 @@ function closeModal(){
  selectedChapter = null;
 }
 
-// ✅ charge le deck correct selon le chapitre
 function startRevision(){
- if(!selectedChapter){
-  alert("Sélectionne un chapitre"); return;
- }
+ if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
  const key = currentLevel + " " + selectedChapter;
- if(chapterDecks[key]){
-  deck = [...chapterDecks[key]];
-  renderCardsPreview();
-  closeModal();
-  alert("Cartes chargées : " + key);
- } else {
-  alert("Aucune carte disponible pour " + key);
- }
+ deck = chapterDecks[key] || [];
+ if(deck.length===0){ alert("Aucune carte pour ce chapitre"); return; }
+ renderCardsPreview();
+ toggleCreate();
+ closeModal();
 }
 
 function toggleCreate(){
@@ -395,7 +383,7 @@ function toggleCreate(){
  const levels = document.getElementById('levelsSection');
  if(create.style.display==='block'){
   create.style.display='none';
-  levels.style.display='';
+  levels.style.display='block';
   create.setAttribute('aria-hidden','true');
  } else {
   create.style.display='block';
@@ -403,14 +391,17 @@ function toggleCreate(){
   create.setAttribute('aria-hidden','false');
  }
 }
+
 function showLevels(){
  document.getElementById('createSection').style.display='none';
  document.getElementById('createSection').setAttribute('aria-hidden','true');
  document.getElementById('levelsSection').style.display='block';
 }
+
 function escapeHtml(s){
  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');
 }
+
 async function addCard(){
  const fTxt = document.getElementById('frontText').value.trim();
  const bTxt = document.getElementById('backText').value.trim();
@@ -419,7 +410,9 @@ async function addCard(){
  let fImg="", bImg="";
  if(fFile) fImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(fFile);});
  if(bFile) bImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(bFile);});
- if(!fTxt && !bTxt && !fImg && !bImg){ alert("Ajoute du texte ou une image."); return; }
+ if(!fTxt && !bTxt && !fImg && !bImg){
+  alert("Ajoute du texte ou une image."); return;
+ }
  deck.push({front:fTxt, back:bTxt, frontImg:fImg, backImg:bImg});
  renderCardsPreview();
  document.getElementById('frontText').value='';
@@ -427,6 +420,7 @@ async function addCard(){
  document.getElementById('frontImg').value='';
  document.getElementById('backImg').value='';
 }
+
 function renderCardsPreview(){
  const list = document.getElementById('cardsList');
  list.innerHTML='';
@@ -441,6 +435,7 @@ function renderCardsPreview(){
   list.appendChild(div);
  });
 }
+
 function exportDeck(){
  if(deck.length===0){ alert("Aucune carte"); return; }
  const blob = new Blob([JSON.stringify(deck)],{type:"application/json"});
@@ -449,6 +444,7 @@ function exportDeck(){
  a.download="deck.json";
  a.click();
 }
+
 document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
 document.getElementById('importFile').addEventListener('change',evt=>{
  const f=evt.target.files[0]; if(!f) return;
@@ -457,77 +453,6 @@ document.getElementById('importFile').addEventListener('change',evt=>{
  fr.readAsText(f);
 });
 document.getElementById('addCardBtn').addEventListener('click',addCard);
-
-/* Révision avec mélange + compteur + progression + confettis */
-function shuffle(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}return array;}
-document.getElementById('reviseBtn').addEventListener('click', ()=>{
- if(deck.length===0){ alert("Aucune carte à réviser !"); return; }
- const shuffled=[...deck]; shuffle(shuffled);
- let idx=0, correct=0, incorrect=0;
- const modal=document.createElement('div');
- modal.className='modal'; modal.style.display='flex';
- modal.innerHTML=`<div class="card" style="max-width:500px;text-align:center;position:relative;">
-  <div class="close" id="closeRevise">✕</div>
-  <div id="reviseContent"></div>
-  <div id="reviewInfo" style="margin-top:10px;">Carte 1/${shuffled.length} | ✔️ 0 | ❌ 0</div>
-  <div id="reviewButtons" style="margin-top:12px;">
-   <button id="correctBtn" class="btn btn-add">Correcte</button>
-   <button id="incorrectBtn" class="btn btn-secondary">Incorrecte</button>
-  </div></div>`;
- document.body.appendChild(modal);
- const container=modal.querySelector('#reviseContent');
- const infoDiv=modal.querySelector('#reviewInfo');
- function updateInfo(){ infoDiv.textContent=`Carte ${idx+1}/${shuffled.length} | ✔️ ${correct} | ❌ ${incorrect}`; }
- function showCard(i){
-  const c=shuffled[i];
-  container.innerHTML=`<div class="flashcard" style="width:300px;height:180px;margin:auto;">
-   <div class="flashcard-inner">
-    <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
-    <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
-   </div></div>`;
-  const flash=container.querySelector('.flashcard'); flash.addEventListener('click',()=>flash.classList.toggle('flipped'));
- }
- showCard(idx); updateInfo();
- modal.querySelector('#correctBtn').onclick=()=>{ correct++; nextCard(); };
- modal.querySelector('#incorrectBtn').onclick=()=>{ incorrect++; nextCard(); };
- modal.querySelector('#closeRevise').onclick=()=>{ document.body.removeChild(modal); };
- function nextCard(){ updateInfo(); idx++; if(idx>=shuffled.length){ endRevision(); } else { showCard(idx); } }
- function endRevision(){
-  updateInfo();
-  const recapSection = document.createElement('div'); recapSection.style.marginTop='20px';
-  recapSection.innerHTML = `<h3>Récapitulatif des réponses</h3>`;
-  const list = document.createElement('ul');
-  shuffled.forEach((c,i)=>{ const li=document.createElement('li'); li.innerHTML=`${escapeHtml(c.front||'')} → ${escapeHtml(c.back||'')} : ${i<correct?'✔️ Correcte':'❌ Incorrecte'}`; list.appendChild(li); });
-  recapSection.appendChild(list);
-  const createSec = document.getElementById('createSection');
-  createSec.appendChild(recapSection);
-  createSec.style.display='block';
-  document.getElementById('levelsSection').style.display='none';
-  createSec.setAttribute('aria-hidden','false');
-  if(correct===shuffled.length){
-    const confetti=document.createElement('div');
-    confetti.style.position='fixed'; confetti.style.top=0; confetti.style.left=0;
-    confetti.style.width='100%'; confetti.style.height='100%'; confetti.style.pointerEvents='none';
-    confetti.style.zIndex=2000; document.body.appendChild(confetti);
-    for(let i=0;i<150;i++){
-      const c=document.createElement('div');
-      c.style.position='absolute'; c.style.width='10px'; c.style.height='10px';
-      c.style.background=`hsl(${Math.random()*360},100%,50%)`;
-      c.style.left=Math.random()*window.innerWidth+'px';
-      c.style.top=Math.random()*window.innerHeight+'px';
-      c.style.opacity=1;
-      c.style.transform=`rotate(${Math.random()*360}deg)`;
-      c.style.borderRadius='50%';
-      c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
-      confetti.appendChild(c);
-      setTimeout(()=>{ c.style.top=window.innerHeight+'px'; c.style.opacity=0; c.style.transform=`rotate(${Math.random()*720}deg)`; },10);
-    }
-    setTimeout(()=>{ document.body.removeChild(confetti); },3000);
-    alert("Félicitations ! Toutes les cartes sont correctes 🎉");
-  } else { alert("Révision terminée !"); }
-  document.body.removeChild(modal);
- }
-});
 </script>
 </body>
 </html>
