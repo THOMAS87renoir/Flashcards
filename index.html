@@ -283,7 +283,7 @@ input[type=file]{ display:block; }
   <div class="levels" id="levelsGrid">
    <article class="level-card" onclick="openModal('Seconde')">
     <div class="icon-square icon-blue">S</div>
-    <div class="level-body"><h3>Seonde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
+    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
    </article>
    <article class="level-card" onclick="openModal('Première')">
     <div class="icon-square icon-teal">1</div>
@@ -362,46 +362,13 @@ function closeModal(){
  modal.setAttribute('aria-hidden','true');
  selectedChapter = null;
 }
-
-/* ------------ MODIF : charger automatiquement les cartes depuis /niveaux/ ------------ */
-async function startRevision(){
+function startRevision(){
  if(!selectedChapter){
   alert("Sélectionne un chapitre"); return;
  }
-
- let stockPath = null;
- if(currentLevel && selectedChapter){
-   const level = currentLevel.toLowerCase()
-                             .replace("è","e")
-                             .replace("é","e")
-                             .replace(/\s+/g,""); 
-   const chapNum = selectedChapter.split(":")[0]
-                                  .trim()
-                                  .toLowerCase()
-                                  .replace(/\s+/g,""); 
-   stockPath = `niveaux/${level}_${chapNum}.json`;
- }
-
- if(stockPath){
-   try {
-     const resp = await fetch(stockPath);
-     if(resp.ok){
-       deck = await resp.json();
-       renderCardsPreview();
-     } else {
-       console.warn("Pas de stock trouvé pour ce chapitre :", stockPath);
-       deck = [];
-     }
-   } catch(e){
-     console.error("Erreur de chargement :", e);
-   }
- }
-
  alert("Démarrage : "+currentLevel+" — "+selectedChapter);
  closeModal();
 }
-/* ----------------------------------------------------------------------------------- */
-
 function toggleCreate(){
  const create = document.getElementById('createSection');
  const levels = document.getElementById('levelsSection');
@@ -456,32 +423,139 @@ function renderCardsPreview(){
  });
 }
 function exportDeck(){
- if(deck.length===0){alert("Pas de cartes à exporter"); return;}
- const blob=new Blob([JSON.stringify(deck)],{type:'application/json'});
+ if(deck.length===0){ alert("Aucune carte"); return; }
+ const blob = new Blob([JSON.stringify(deck)],{type:"application/json"});
  const a=document.createElement('a');
  a.href=URL.createObjectURL(blob);
- a.download='deck.json';
+ a.download="deck.json";
  a.click();
 }
-function importDeck(file){
+document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
+document.getElementById('importFile').addEventListener('change',evt=>{
+ const f=evt.target.files[0]; if(!f) return;
  const fr=new FileReader();
- fr.onload=e=>{
-  try{
-   const arr=JSON.parse(e.target.result);
-   if(Array.isArray(arr)){ deck=arr; renderCardsPreview();}
-   else alert("Fichier invalide");
-  }catch{ alert("Erreur de lecture du fichier"); }
- };
- fr.readAsText(file);
-}
-document.getElementById('addCardBtn').addEventListener('click',addCard);
-document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
-document.getElementById('importFile').addEventListener('change',e=>{
- if(e.target.files.length) importDeck(e.target.files[0]);
+ fr.onload=e=>{ try{ deck=JSON.parse(e.target.result); renderCardsPreview(); }catch{ alert("Fichier invalide"); } };
+ fr.readAsText(f);
 });
-document.getElementById('reviseBtn').addEventListener('click',()=>{
- if(deck.length===0){alert("Aucune carte");return;}
- alert("Mode révision lancé avec "+deck.length+" cartes.");
+document.getElementById('addCardBtn').addEventListener('click',addCard);
+
+/* Révision avec mélange + compteur + progression + confettis */
+function shuffle(array){
+ for(let i=array.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [array[i],array[j]]=[array[j],array[i]];
+ }
+ return array;
+}
+
+document.getElementById('reviseBtn').addEventListener('click', ()=>{
+ if(deck.length===0){ alert("Aucune carte à réviser !"); return; }
+ const shuffled=[...deck]; shuffle(shuffled);
+ let idx=0, correct=0, incorrect=0;
+
+ const modal=document.createElement('div');
+ modal.className='modal'; modal.style.display='flex';
+ modal.innerHTML=`
+  <div class="card" style="max-width:500px;text-align:center;position:relative;">
+   <div class="close" id="closeRevise">✕</div>
+   <div id="reviseContent"></div>
+   <div id="reviewInfo" style="margin-top:10px;">Carte 1/${shuffled.length} | ✔️ 0 | ❌ 0</div>
+   <div id="reviewButtons" style="margin-top:12px;">
+    <button id="correctBtn" class="btn btn-add">Correcte</button>
+    <button id="incorrectBtn" class="btn btn-secondary">Incorrecte</button>
+   </div>
+  </div>`;
+ document.body.appendChild(modal);
+ const container=modal.querySelector('#reviseContent');
+ const infoDiv=modal.querySelector('#reviewInfo');
+
+ function updateInfo(){ infoDiv.textContent=`Carte ${idx+1}/${shuffled.length} | ✔️ ${correct} | ❌ ${incorrect}`; }
+
+ function showCard(i){
+  const c=shuffled[i];
+  container.innerHTML=`
+   <div class="flashcard" style="width:300px;height:180px;margin:auto;">
+    <div class="flashcard-inner">
+     <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
+     <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
+    </div>
+   </div>`;
+  const flash=container.querySelector('.flashcard');
+  flash.addEventListener('click',()=>flash.classList.toggle('flipped'));
+ }
+
+ showCard(idx);
+ updateInfo();
+
+ modal.querySelector('#correctBtn').onclick=()=>{ correct++; nextCard(); };
+ modal.querySelector('#incorrectBtn').onclick=()=>{ incorrect++; nextCard(); };
+ modal.querySelector('#closeRevise').onclick=()=>{ document.body.removeChild(modal); };
+
+ function nextCard(){
+  updateInfo();
+  idx++;
+  if(idx>=shuffled.length){ endRevision(); }
+  else { showCard(idx); }
+ }
+
+ function endRevision(){
+  updateInfo();
+
+  const recapSection = document.createElement('div');
+  recapSection.style.marginTop = '20px';
+  recapSection.innerHTML = `<h3>Récapitulatif des réponses</h3>`;
+  const list = document.createElement('ul');
+  shuffled.forEach((c,i)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `${escapeHtml(c.front||'')} → ${escapeHtml(c.back||'')} : ${i<correct ? '✔️ Correcte' : '❌ Incorrecte'}`;
+    list.appendChild(li);
+  });
+  recapSection.appendChild(list);
+
+  const createSec = document.getElementById('createSection');
+  createSec.appendChild(recapSection);
+  createSec.style.display = 'block';
+  document.getElementById('levelsSection').style.display='none';
+  createSec.setAttribute('aria-hidden','false');
+
+  if(correct===shuffled.length){
+    const confetti=document.createElement('div');
+    confetti.style.position='fixed';
+    confetti.style.top=0;
+    confetti.style.left=0;
+    confetti.style.width='100%';
+    confetti.style.height='100%';
+    confetti.style.pointerEvents='none';
+    confetti.style.zIndex=2000;
+    document.body.appendChild(confetti);
+
+    for(let i=0;i<150;i++){
+      const c=document.createElement('div');
+      c.style.position='absolute';
+      c.style.width='10px';
+      c.style.height='10px';
+      c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+      c.style.left=Math.random()*window.innerWidth+'px';
+      c.style.top=Math.random()*window.innerHeight+'px';
+      c.style.opacity=1;
+      c.style.transform=`rotate(${Math.random()*360}deg)`;
+      c.style.borderRadius='50%';
+      c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
+      confetti.appendChild(c);
+      setTimeout(()=>{
+        c.style.top=window.innerHeight+'px';
+        c.style.opacity=0;
+        c.style.transform=`rotate(${Math.random()*720}deg)`;
+      },10);
+    }
+    setTimeout(()=>{ document.body.removeChild(confetti); },3000);
+    alert("Félicitations ! Toutes les cartes sont correctes 🎉");
+  } else {
+    alert("Révision terminée !");
+  }
+
+  document.body.removeChild(modal);
+ }
 });
 </script>
 </body>
