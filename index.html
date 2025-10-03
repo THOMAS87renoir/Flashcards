@@ -6,12 +6,9 @@
 <title>Création de Flash Cards</title>
 <link rel="manifest" href="manifest.json">
 
-<!-- KaTeX -->
+<!-- KaTeX pour LaTeX -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-
-<!-- LZ-String -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 
 <style>
 body{
@@ -19,15 +16,15 @@ body{
   max-width: 900px;
   margin: 20px auto;
   padding: 10px;
-  background: #f9f9f9;
+  background: linear-gradient(135deg, #ff9800, #ffcc80);
   color: #333;
 }
 
-h1,h3{text-align:center;color:#2196f3;}
+h1,h3{text-align:center;color:#fff; text-shadow:1px 1px 2px #555;}
 textarea{width:100%;min-height:50px;padding:8px;border-radius:6px;border:1px solid #ccc;margin-bottom:5px;}
 input[type=text]{padding:6px;border-radius:6px;border:1px solid #ccc;}
-button{padding:6px 12px;border:none;border-radius:6px;background:#2196f3;color:white;cursor:pointer;transition:0.2s;}
-button:hover{background:#1976d2;}
+button{padding:6px 12px;border:none;border-radius:6px;background:#ff9800;color:white;cursor:pointer;transition:0.2s;}
+button:hover{background:#fb8c00;}
 .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:5px;}
 .small{font-size:0.85em; color:#555;}
 #cardsList{display:flex; flex-wrap:wrap; justify-content:center; gap:15px; margin-top:20px;}
@@ -65,9 +62,10 @@ button:hover{background:#1976d2;}
   font-size:1.1em;
   padding:10px;
   text-align:center;
+  word-break: break-word;
 }
 .flashcard .front{background:#fff;color:#333;}
-.flashcard .back{background:#e3f2fd;color:#111;transform:rotateY(180deg);}
+.flashcard .back{background:#ffe0b2;color:#111;transform:rotateY(180deg);}
 .flashcard img{max-width:100%; max-height:80px; margin-top:5px; border-radius:6px;}
 
 /* Pop-up Révision */
@@ -104,7 +102,7 @@ button:hover{background:#1976d2;}
 }
 #reviewButtons button.correct{background:#4caf50;}
 #reviewButtons button.incorrect{background:#f44336;}
-#signature{ text-align:center; margin-top:20px; color:#777; font-size:0.9em; }
+#signature{ text-align:center; margin-top:20px; color:#fff; font-size:0.9em; text-shadow:1px 1px 2px #555; }
 
 /* Bouton pour fermer la révision */
 #closeReviewBtn {
@@ -127,18 +125,14 @@ button:hover{background:#1976d2;}
 
 <h1>Création de Flash Cards</h1>
 
-<!-- Bibliothèque -->
 <h3>Bibliothèque</h3>
 <div class="row" style="justify-content:center; margin-bottom:15px;">
-  <!-- Menu déroulant Seconde -->
   <select id="secondeSelect">
     <option value="">-- Seconde --</option>
     <option value="./decks/seconde/seconde-chap1.json">Chapitre 1</option>
     <option value="./decks/seconde/seconde-chap2.json">Chapitre 2</option>
     <option value="./decks/seconde/seconde-chap3.json">Chapitre 3</option>
   </select>
-
-  <!-- Autres boutons -->
   <button data-deck="./decks/premiere-specifique.json">Première Maths Spécifique</button>
   <button data-deck="./decks/premiere-spe.json">Première Spé Maths</button>
   <button data-deck="./decks/terminale-spe.json">Terminale Spé Maths</button>
@@ -150,24 +144,15 @@ button:hover{background:#1976d2;}
     <label>Nom du fichier : <input id="deckFileName" value="mes-cartes.json"></label>
   </div>
 
-  <!-- Ajouter carte -->
   <div class="card">
     <h3>Ajouter une carte</h3>
     <label>Recto :</label>
-    <textarea id="frontText" placeholder="Texte ou LaTeX"></textarea>
+    <textarea id="frontText" placeholder="Texte ou LaTeX ($...$)"></textarea>
     <input type="file" id="frontImg" accept="image/*">
-    <div style="margin-top:5px;">
-      <label>Aperçu Recto :</label>
-      <div id="frontPreview" class="preview" style="min-height:50px; border:1px solid #ccc; padding:5px; background:#fff;"></div>
-    </div>
-
+    
     <label>Verso :</label>
-    <textarea id="backText" placeholder="Texte ou LaTeX"></textarea>
+    <textarea id="backText" placeholder="Texte ou LaTeX ($...$)"></textarea>
     <input type="file" id="backImg" accept="image/*">
-    <div style="margin-top:5px;">
-      <label>Aperçu Verso :</label>
-      <div id="backPreview" class="preview" style="min-height:50px; border:1px solid #ccc; padding:5px; background:#e3f2fd;"></div>
-    </div>
 
     <div class="row">
       <button id="addCardBtn">Ajouter la carte</button>
@@ -184,7 +169,6 @@ button:hover{background:#1976d2;}
     <button id="startReviewBtn">Commencer la révision</button>
   </div>
 
-  <!-- Pop-up Révision -->
   <div id="reviewPopup">
     <div id="reviewCounter"></div>
     <button id="closeReviewBtn">&times;</button>
@@ -201,14 +185,13 @@ button:hover{background:#1976d2;}
   </div>
 
   <div style="text-align:center; margin-top:15px;">
-    <button id="resetDeckBtn" style="background:#e53935;">Réinitialiser les cartes</button>
+    <button id="resetDeckBtn" style="background:#d84315;">Réinitialiser les cartes</button>
   </div>
 </div>
 
 <div id="signature">Margaux THOMAS Lycée RENOIR</div>
 
 <script>
-/* ---------------- Variables ---------------- */
 const deckFileNameInput = document.getElementById('deckFileName');
 const frontText = document.getElementById('frontText');
 const backText = document.getElementById('backText');
@@ -229,16 +212,12 @@ const incorrectBtn = document.querySelector('#reviewButtons .incorrect');
 const closeReviewBtn = document.getElementById('closeReviewBtn');
 const secondeSelect = document.getElementById("secondeSelect");
 
-const frontPreview = document.getElementById('frontPreview');
-const backPreview = document.getElementById('backPreview');
-
 let currentDeck = {name:'Mon deck', cards:[]};
 let reviewDeck = [];
 let currentReviewIndex = 0;
 let correctCount = 0;
 let incorrectCount = 0;
 
-/* ---------------- Fonctions ---------------- */
 function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
 function splitWithTex(s){
@@ -340,32 +319,15 @@ function nextReview(correct){
   showReviewCard();
 }
 
-function updatePreview(el, previewDiv) {
-  const text = el.value;
-  previewDiv.setAttribute('data-text', text);
-  previewDiv.setAttribute('data-img', '');
-  renderPreviews();
-}
-
-/* ---------------- Événements ---------------- */
-// Sélecteur Seconde
 secondeSelect.addEventListener("change", () => {
   const url = secondeSelect.value;
   if(url) loadDeck(url);
 });
 
-// Boutons autres decks
 document.querySelectorAll('button[data-deck]').forEach(btn => {
-  btn.addEventListener('click', ()=>{
-    loadDeck(btn.getAttribute('data-deck'));
-  });
+  btn.addEventListener('click', ()=> loadDeck(btn.getAttribute('data-deck')));
 });
 
-// Aperçus LaTeX temps réel
-frontText.addEventListener('input', ()=>updatePreview(frontText, frontPreview));
-backText.addEventListener('input', ()=>updatePreview(backText, backPreview));
-
-// Ajouter carte
 addCardBtn.onclick = async ()=>{
   const front = frontText.value.trim();
   const back = backText.value.trim();
@@ -378,11 +340,8 @@ addCardBtn.onclick = async ()=>{
   renderFlashcards();
   frontText.value=backText.value='';
   frontImgInput.value=backImgInput.value='';
-  updatePreview(frontText, frontPreview);
-  updatePreview(backText, backPreview);
 };
 
-// Exporter
 exportFileBtn.onclick = ()=>{
   const data = JSON.stringify(currentDeck,null,2);
   let fileName = deckFileNameInput.value.trim();
@@ -395,7 +354,6 @@ exportFileBtn.onclick = ()=>{
   URL.revokeObjectURL(a.href);
 };
 
-// Importer
 importFileInput.addEventListener('change', e=>{
   const file = e.target.files[0];
   if(!file) return;
@@ -413,7 +371,6 @@ importFileInput.addEventListener('change', e=>{
   reader.readAsText(file);
 });
 
-// Réinitialiser
 resetDeckBtn.onclick = ()=>{
   if(confirm("Réinitialiser le deck ?")){
     currentDeck={name:'Mon deck', cards:[]};
@@ -422,7 +379,6 @@ resetDeckBtn.onclick = ()=>{
   }
 };
 
-// Révision
 startReviewBtn.onclick = ()=>{
   if(currentDeck.cards.length===0){ alert("Pas de cartes !"); return; }
   reviewDeck = shuffleArray([...currentDeck.cards]);
@@ -436,11 +392,8 @@ correctBtn.onclick = ()=> nextReview(true);
 incorrectBtn.onclick = ()=> nextReview(false);
 closeReviewBtn.onclick = ()=> reviewPopup.style.display='none';
 
-/* ---------------- Init ---------------- */
 (function init(){
   renderFlashcards();
-  updatePreview(frontText, frontPreview);
-  updatePreview(backText, backPreview);
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').then(()=>console.log('SW enregistré'));
   }
@@ -448,3 +401,4 @@ closeReviewBtn.onclick = ()=> reviewPopup.style.display='none';
 </script>
 </body>
 </html>
+
