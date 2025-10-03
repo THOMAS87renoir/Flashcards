@@ -5,6 +5,11 @@
 <title>Flashcards</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
+/* ==========================================================
+   Styles principaux de la page
+   - Dégradés, couleurs, polices
+   - Style des cartes, boutons, modal, etc.
+========================================================== */
 :root{
  --orange-1: #ff9f1c;
  --orange-2: #ff6b35;
@@ -53,7 +58,8 @@ main{flex:1;}
  line-height:1;
  font-weight:700;
  letter-spacing:-0.6px;
- text-shadow:0 2px 10px rgba(0,0,0,0.08);}
+ text-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
 .hero .create-btn{
  background: rgba(255,255,255,0.98);
  color: var(--orange-2);
@@ -88,18 +94,14 @@ main{flex:1;}
  font-weight:600;
  color:#333;
  transform-origin:center;
- border:1px solid rgba(0,0,0,0.04);}
-.mini-card:nth-child(1){
- transform:rotate(-8deg) translateX(-20px);
- background: linear-gradient(180deg,#ffffff,#fff3f0);}
-.mini-card:nth-child(2){
- transform:rotate(2deg); z-index:2;
- background: linear-gradient(180deg,#ffffff,#eefcff);}
-.mini-card:nth-child(3){
- transform:rotate(8deg) translateX(20px);
- background: linear-gradient(180deg,#fffef6,#fff9e6);}
+ border:1px solid rgba(0,0,0,0.04);
+}
+.mini-card:nth-child(1){ transform:rotate(-8deg) translateX(-20px); background: linear-gradient(180deg,#ffffff,#fff3f0);}
+.mini-card:nth-child(2){ transform:rotate(2deg); z-index:2; background: linear-gradient(180deg,#ffffff,#eefcff);}
+.mini-card:nth-child(3){ transform:rotate(8deg) translateX(20px); background: linear-gradient(180deg,#fffef6,#fff9e6);}
 .mini-card .q{ font-size:14px; opacity:0.9; }
 .mini-card .a{ font-size:11px; opacity:0.65; margin-top:6px; }
+
 .container{
  max-width:1200px;
  margin:60px auto 40px;
@@ -120,10 +122,12 @@ main{flex:1;}
  box-shadow: var(--card-shadow);
  cursor:pointer;
  transition: transform .16s ease, box-shadow .16s ease;
- border:1px solid rgba(0,0,0,0.03);}
+ border:1px solid rgba(0,0,0,0.03);
+}
 .level-card:hover{
  transform: translateY(-6px);
- box-shadow:0 14px 30px rgba(16,24,40,0.12);}
+ box-shadow:0 14px 30px rgba(16,24,40,0.12);
+}
 .icon-square{
  width:72px;
  height:72px;
@@ -134,7 +138,8 @@ main{flex:1;}
  flex-shrink:0;
  box-shadow:0 6px 18px rgba(0,0,0,0.06);
  color:white;
- font-size:28px;}
+ font-size:28px;
+}
 .icon-blue{ background: linear-gradient(180deg,#4e73df,#6c8cff); }
 .icon-teal{ background: linear-gradient(180deg,#06b6d4,#3dd6e9);}
 .icon-green{ background: linear-gradient(180deg,#16a34a,#4ade80);}
@@ -162,13 +167,15 @@ main{flex:1;}
 .chapter-list{
  list-style:none;
  padding:0; margin:0;
- display:flex; flex-direction:column; gap:8px;}
+ display:flex; flex-direction:column; gap:8px;
+}
 .chapter-list li{
  padding:10px 12px;
  border-radius:8px;
  background:#f7f7f8;
  cursor:pointer;
- border:1px solid rgba(0,0,0,0.03);}
+ border:1px solid rgba(0,0,0,0.03);
+}
 .chapter-list li:hover{ background:#eef3ff;}
 .modal .start-btn{
  margin-top:12px;
@@ -178,10 +185,12 @@ main{flex:1;}
  padding:10px 14px;
  border-radius:10px;
  cursor:pointer;
- font-weight:700;}
+ font-weight:700;
+}
 .modal .close{
  position:absolute; top:8px; right:10px;
- font-size:20px; cursor:pointer; color:#666; }
+ font-size:20px; cursor:pointer; color:#666; 
+}
 #createSection{
  display:none;
  max-width:980px;
@@ -241,7 +250,8 @@ input[type=file]{ display:block; }
  backface-visibility:hidden;
  display:flex; align-items:center; justify-content:center;
  text-align:center; padding:12px; font-weight:600;
- box-shadow:0 6px 14px rgba(0,0,0,0.08);}
+ box-shadow:0 6px 14px rgba(0,0,0,0.08);
+}
 .front{
  background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
 }
@@ -261,6 +271,10 @@ input[type=file]{ display:block; }
 </style>
 </head>
 <body>
+<!-- ==========================================================
+   Header de la page : Titre + boutons "Étudier" et "Créer"
+   + mini cartes décoratives
+========================================================== -->
 <header class="hero" role="banner">
  <div class="hero-inner">
   <div class="hero-left">
@@ -278,57 +292,64 @@ input[type=file]{ display:block; }
   <div class="mini-card"><div class="q">sin²+cos²</div><div class="a">=1</div></div>
  </div>
 </header>
+
+<!-- ==========================================================
+   Section des niveaux / classes
+========================================================== -->
 <main class="container" role="main">
  <section id="levelsSection">
   <div class="levels" id="levelsGrid">
-   <!-- Tous les niveaux ajoutés ici -->
+   <!-- Exemple : Seconde, Première, Terminale -->
    <article class="level-card" onclick="openModal('6ème')">
     <div class="icon-square icon-blue">6</div>
-    <div class="level-body"><h3>6ème</h3><p class="muted">Nombres / Géométrie / Fractions</p></div>
+    <div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div>
    </article>
    <article class="level-card" onclick="openModal('5ème')">
     <div class="icon-square icon-teal">5</div>
-    <div class="level-body"><h3>5ème</h3><p class="muted">Proportions / Aire / Volumes</p></div>
+    <div class="level-body"><h3>5ème</h3><p class="muted">Bases</p></div>
    </article>
    <article class="level-card" onclick="openModal('4ème')">
     <div class="icon-square icon-green">4</div>
-    <div class="level-body"><h3>4ème</h3><p class="muted">Equations / Fonctions</p></div>
+    <div class="level-body"><h3>4ème</h3><p class="muted">Bases</p></div>
    </article>
    <article class="level-card" onclick="openModal('3ème')">
     <div class="icon-square icon-amber">3</div>
-    <div class="level-body"><h3>3ème</h3><p class="muted">Géométrie / Statistiques</p></div>
+    <div class="level-body"><h3>3ème</h3><p class="muted">Bases</p></div>
    </article>
    <article class="level-card" onclick="openModal('Seconde')">
     <div class="icon-square icon-blue">S</div>
     <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
    </article>
-   <article class="level-card" onclick="openModal('Première Spécifique')">
-    <div class="icon-square icon-teal">1S</div>
-    <div class="level-body"><h3>Première Spécifique</h3><p class="muted">Analyse / Probabilités</p></div>
-   </article>
    <article class="level-card" onclick="openModal('Première')">
     <div class="icon-square icon-teal">1</div>
     <div class="level-body"><h3>Première</h3><p class="muted">Suites / Probabilités / Analyse</p></div>
    </article>
-   <article class="level-card" onclick="openModal('Terminale Complète')">
-    <div class="icon-square icon-green">TC</div>
-    <div class="level-body"><h3>Terminale Complète</h3><p class="muted">Dérivées / Intégrales / Logarithmes</p></div>
+   <article class="level-card" onclick="openModal('Première Spé')">
+    <div class="icon-square icon-green">1S</div>
+    <div class="level-body"><h3>Première Spé</h3><p class="muted">Analyse / Probabilités</p></div>
    </article>
-   <article class="level-card" onclick="openModal('Terminale Spéciale')">
+   <article class="level-card" onclick="openModal('Terminale Spé')">
     <div class="icon-square icon-amber">TS</div>
-    <div class="level-body"><h3>Terminale Spéciale</h3><p class="muted">Probabilités / Suites</p></div>
+    <div class="level-body"><h3>Terminale Spé</h3><p class="muted">Analyse / Probabilités</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale Comp')">
+    <div class="icon-square icon-blue">TC</div>
+    <div class="level-body"><h3>Terminale Comp</h3><p class="muted">Calcul / Analyse</p></div>
    </article>
    <article class="level-card" onclick="openModal('Terminale Experte')">
-    <div class="icon-square icon-blue">TE</div>
-    <div class="level-body"><h3>Terminale Experte</h3><p class="muted">Complexes / Graphes / Matrices</p></div>
+    <div class="icon-square icon-teal">TE</div>
+    <div class="level-body"><h3>Terminale Experte</h3><p class="muted">Analyse avancée</p></div>
    </article>
    <article class="level-card" onclick="openModal('CAPES')">
-    <div class="icon-square icon-teal">C</div>
-    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation concours / Analyse approfondie</p></div>
+    <div class="icon-square icon-green">C</div>
+    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation examen</p></div>
    </article>
   </div>
  </section>
 
+<!-- ==========================================================
+   Section création / révision des cartes
+========================================================== -->
  <section id="createSection" aria-hidden="true">
   <h2>Créer / Réviser les cartes</h2>
   <label class="muted">Recto</label>
@@ -341,52 +362,61 @@ input[type=file]{ display:block; }
    <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
    <button class="btn btn-secondary" onclick="exportDeck()">Exporter</button>
    <button class="btn btn-secondary" id="importBtn">Importer</button>
-   <button class="btn btn-add" id="reviseBtn" onclick="toggleCreate()">Réviser</button>
+   <button class="btn btn-add" id="reviseBtn">Réviser</button>
   </div>
   <div id="cardsList" aria-live="polite"></div>
   <input type="file" id="importFile" accept=".json" style="display:none">
  </section>
 </main>
 
+<!-- ==========================================================
+   Modal sélection du chapitre
+========================================================== -->
 <div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-hidden="true">
  <div class="card">
   <div class="close" onclick="closeModal()">✕</div>
   <h2 id="modalTitle">Chapitres</h2>
   <ul class="chapter-list" id="chapterList"></ul>
-  <button class="start-btn" onclick="startRevision()">▶️ Commencer la révision</button>
+  <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
  </div>
 </div>
 
 <script>
-// Définition des chapitres pour chaque niveau
+/* ==========================================================
+   Données des chapitres et cartes
+========================================================== */
 const chapters = {
  "6ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "5ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "4ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "3ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
- "Première Spécifique":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"],
- "Terminale Complète":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales","Chapitre 3 : Logarithmes"],
- "Terminale Spéciale":["Chapitre 1","Chapitre 2","Chapitre 3"],
- "Terminale Experte":["Chapitre 1","Chapitre 2","Chapitre 3"],
- "CAPES":["Chapitre 1","Chapitre 2","Chapitre 3"]
+ "Première Spé":["Chapitre 1","Chapitre 2"],
+ "Terminale Spé":["Chapitre 1","Chapitre 2"],
+ "Terminale Comp":["Chapitre 1","Chapitre 2"],
+ "Terminale Experte":["Chapitre 1","Chapitre 2"],
+ "CAPES":["Chapitre 1","Chapitre 2"]
 };
 
-// Définition des cartes pour certains chapitres (exemple Seconde Chapitre 1)
 const chapterDecks = {
  "Seconde Chapitre 1 : Bases":[
    { front:"f(x)=x²", back:"→ dérivée 2x", frontImg:"", backImg:"" },
    { front:"(a+b)²", back:"= a² + 2ab + b²", frontImg:"", backImg:"" },
    { front:"sin²+cos²", back:"=1", frontImg:"", backImg:"" }
-]
+ ]
 };
 
+/* ==========================================================
+   Variables globales
+========================================================== */
 let currentLevel = null;
 let selectedChapter = null;
 let deck = [];
 
-// Ouvrir la modal pour choisir le chapitre
+/* ==========================================================
+   Fonctions pour modal et navigation
+========================================================== */
 function openModal(level){
  currentLevel = level;
  selectedChapter = null;
@@ -408,7 +438,6 @@ function openModal(level){
  modal.setAttribute('aria-hidden','false');
 }
 
-// Fermer la modal
 function closeModal(){
  const modal = document.getElementById('chapterModal');
  modal.style.display = 'none';
@@ -416,7 +445,6 @@ function closeModal(){
  selectedChapter = null;
 }
 
-// Commencer la révision avec les cartes correspondantes
 function startRevision(){
  if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
  const key = currentLevel + " " + selectedChapter;
@@ -427,7 +455,9 @@ function startRevision(){
  closeModal();
 }
 
-// Afficher / masquer la section Créer
+/* ==========================================================
+   Affichage / création de cartes
+========================================================== */
 function toggleCreate(){
  const create = document.getElementById('createSection');
  const levels = document.getElementById('levelsSection');
@@ -442,19 +472,16 @@ function toggleCreate(){
  }
 }
 
-// Retour à la liste des niveaux
 function showLevels(){
  document.getElementById('createSection').style.display='none';
  document.getElementById('createSection').setAttribute('aria-hidden','true');
  document.getElementById('levelsSection').style.display='block';
 }
 
-// Échapper le texte HTML
 function escapeHtml(s){
  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');
 }
 
-// Ajouter une carte
 async function addCard(){
  const fTxt = document.getElementById('frontText').value.trim();
  const bTxt = document.getElementById('backText').value.trim();
@@ -474,7 +501,6 @@ async function addCard(){
  document.getElementById('backImg').value='';
 }
 
-// Afficher les cartes
 function renderCardsPreview(){
  const list = document.getElementById('cardsList');
  list.innerHTML='';
@@ -490,17 +516,26 @@ function renderCardsPreview(){
  });
 }
 
-// Exporter le deck
+/* ==========================================================
+   Export / Import
+   - Export texte clair (Recto / Verso) pour Bloc-notes
+========================================================== */
 function exportDeck(){
  if(deck.length===0){ alert("Aucune carte"); return; }
- const blob = new Blob([JSON.stringify(deck)],{type:"application/json"});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download="deck.json";
+ 
+ // Texte lisible pour Bloc-notes
+ let text = '';
+ deck.forEach(c=>{
+   text += `Recto : ${c.front || ''}\nVerso : ${c.back || ''}\n-----------------------\n`;
+ });
+
+ const blob = new Blob([text], {type:"text/plain"});
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(blob);
+ a.download = "deck.txt";
  a.click();
 }
 
-// Importer un deck
 document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
 document.getElementById('importFile').addEventListener('change',evt=>{
  const f=evt.target.files[0]; if(!f) return;
@@ -512,3 +547,4 @@ document.getElementById('addCardBtn').addEventListener('click',addCard);
 </script>
 </body>
 </html>
+
