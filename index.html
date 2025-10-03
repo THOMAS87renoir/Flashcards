@@ -5,11 +5,6 @@
 <title>Flashcards</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-/* ==========================================================
-   Styles principaux de la page
-   - Dégradés, couleurs, polices
-   - Style des cartes, boutons, modal, etc.
-========================================================== */
 :root{
  --orange-1: #ff9f1c;
  --orange-2: #ff6b35;
@@ -271,10 +266,6 @@ input[type=file]{ display:block; }
 </style>
 </head>
 <body>
-<!-- ==========================================================
-   Header de la page : Titre + boutons "Étudier" et "Créer"
-   + mini cartes décoratives
-========================================================== -->
 <header class="hero" role="banner">
  <div class="hero-inner">
   <div class="hero-left">
@@ -293,13 +284,9 @@ input[type=file]{ display:block; }
  </div>
 </header>
 
-<!-- ==========================================================
-   Section des niveaux / classes
-========================================================== -->
 <main class="container" role="main">
  <section id="levelsSection">
   <div class="levels" id="levelsGrid">
-   <!-- Exemple : Seconde, Première, Terminale -->
    <article class="level-card" onclick="openModal('6ème')">
     <div class="icon-square icon-blue">6</div>
     <div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div>
@@ -347,9 +334,6 @@ input[type=file]{ display:block; }
   </div>
  </section>
 
-<!-- ==========================================================
-   Section création / révision des cartes
-========================================================== -->
  <section id="createSection" aria-hidden="true">
   <h2>Créer / Réviser les cartes</h2>
   <label class="muted">Recto</label>
@@ -360,8 +344,8 @@ input[type=file]{ display:block; }
   <input id="backImg" type="file" accept="image/*">
   <div class="controls">
    <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
-   <button class="btn btn-secondary" onclick="exportDeck()">Exporter</button>
-   <button class="btn btn-secondary" id="importBtn">Importer</button>
+   <button class="btn btn-secondary" id="exportBtn">Exporter JSON</button>
+   <button class="btn btn-secondary" id="importBtn">Importer JSON</button>
    <button class="btn btn-add" id="reviseBtn">Réviser</button>
   </div>
   <div id="cardsList" aria-live="polite"></div>
@@ -369,9 +353,6 @@ input[type=file]{ display:block; }
  </section>
 </main>
 
-<!-- ==========================================================
-   Modal sélection du chapitre
-========================================================== -->
 <div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-hidden="true">
  <div class="card">
   <div class="close" onclick="closeModal()">✕</div>
@@ -382,9 +363,6 @@ input[type=file]{ display:block; }
 </div>
 
 <script>
-/* ==========================================================
-   Données des chapitres et cartes
-========================================================== */
 const chapters = {
  "6ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "5ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
@@ -407,16 +385,12 @@ const chapterDecks = {
  ]
 };
 
-/* ==========================================================
-   Variables globales
-========================================================== */
 let currentLevel = null;
 let selectedChapter = null;
 let deck = [];
+let reviewIndex = 0;
+let reviewDeck = [];
 
-/* ==========================================================
-   Fonctions pour modal et navigation
-========================================================== */
 function openModal(level){
  currentLevel = level;
  selectedChapter = null;
@@ -455,9 +429,6 @@ function startRevision(){
  closeModal();
 }
 
-/* ==========================================================
-   Affichage / création de cartes
-========================================================== */
 function toggleCreate(){
  const create = document.getElementById('createSection');
  const levels = document.getElementById('levelsSection');
@@ -516,34 +487,79 @@ function renderCardsPreview(){
  });
 }
 
-/* ==========================================================
-   Export / Import
-   - Export texte clair (Recto / Verso) pour Bloc-notes
-========================================================== */
-function exportDeck(){
- if(deck.length===0){ alert("Aucune carte"); return; }
- 
- // Texte lisible pour Bloc-notes
- let text = '';
- deck.forEach(c=>{
-   text += `Recto : ${c.front || ''}\nVerso : ${c.back || ''}\n-----------------------\n`;
- });
-
- const blob = new Blob([text], {type:"text/plain"});
- const a = document.createElement('a');
- a.href = URL.createObjectURL(blob);
- a.download = "deck.txt";
- a.click();
+// ==========================================================
+// Révision interactive
+// ==========================================================
+function startRevisionMode() {
+    if(deck.length === 0){ alert("Aucune carte à réviser."); return; }
+    reviewDeck = [...deck];
+    reviewIndex = 0;
+    showReviewCard();
 }
 
-document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
-document.getElementById('importFile').addEventListener('change',evt=>{
- const f=evt.target.files[0]; if(!f) return;
- const fr=new FileReader();
- fr.onload=e=>{ try{ deck=JSON.parse(e.target.result); renderCardsPreview(); }catch{ alert("Fichier invalide"); } };
- fr.readAsText(f);
+function showReviewCard() {
+    if(reviewIndex >= reviewDeck.length){
+        alert("Révision terminée !");
+        renderCardsPreview();
+        return;
+    }
+    const card = reviewDeck[reviewIndex];
+    const front = escapeHtml(card.front || '');
+    const back = escapeHtml(card.back || '');
+    const fImg = card.frontImg ? `<img src="${card.frontImg}" style="max-width:90%;max-height:100px"><br>` : '';
+    const bImg = card.backImg ? `<img src="${card.backImg}" style="max-width:90%;max-height:100px"><br>` : '';
+    
+    const flashcardInner = document.createElement('div');
+    flashcardInner.className = 'flashcard-inner';
+    flashcardInner.innerHTML = `<div class="front">${fImg}${front}</div>
+                                <div class="back">${bImg}${back}</div>`;
+    flashcardInner.addEventListener('click', () => flashcardInner.classList.toggle('flipped'));
+
+    const container = document.getElementById('cardsList');
+    container.innerHTML = '';
+    const flashcardDiv = document.createElement('div');
+    flashcardDiv.className = 'flashcard';
+    flashcardDiv.appendChild(flashcardInner);
+    container.appendChild(flashcardDiv);
+}
+
+// ==========================================================
+// Export / Import JSON
+// ==========================================================
+function exportDeckJSON(){
+    if(deck.length===0){ alert("Aucune carte à exporter."); return; }
+    const blob = new Blob([JSON.stringify(deck, null, 2)], {type:"application/json"});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "deck.json";
+    a.click();
+}
+
+function importDeckJSON(file){
+    const fr = new FileReader();
+    fr.onload = e => {
+        try {
+            deck = JSON.parse(e.target.result);
+            renderCardsPreview();
+            alert("Deck importé !");
+        } catch {
+            alert("Fichier JSON invalide !");
+        }
+    };
+    fr.readAsText(file);
+}
+
+// ==========================================================
+// Liens boutons
+// ==========================================================
+document.getElementById('reviseBtn').addEventListener('click', startRevisionMode);
+document.getElementById('exportBtn').addEventListener('click', exportDeckJSON);
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', evt => {
+    const file = evt.target.files[0];
+    if(file) importDeckJSON(file);
 });
-document.getElementById('addCardBtn').addEventListener('click',addCard);
+document.getElementById('addCardBtn').addEventListener('click', addCard);
 </script>
 </body>
 </html>
