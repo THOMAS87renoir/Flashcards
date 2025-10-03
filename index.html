@@ -5,454 +5,190 @@
 <title>Flashcards</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-:root{
- --orange-1: #ff9f1c;
- --orange-2: #ff6b35;
- --bg-a: #a8edea;
- --bg-b: #fed6e3;
- --card-shadow: 0 8px 20px rgba(16,24,40,0.12);
-}
-html,body{
- height:100%;
- margin:0;
- font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
- color:#222;
- background: linear-gradient(90deg,var(--bg-a),var(--bg-b));
- -webkit-font-smoothing:antialiased;
-}
-main{flex:1;}
-.hero{
- background: linear-gradient(90deg,var(--orange-1),var(--orange-2));
- color:white;
- padding:28px 20px 56px 20px;
- position:relative;
- overflow:visible;
- box-shadow:0 6px 20px rgba(0,0,0,0.08);
-}
-.hero-inner{
- max-width:1200px;
- margin:0 auto;
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:12px;
-}
-.hero-left{
- display:flex;
- flex-direction:column;
- gap:6px;
-}
-.hero-left .small{
- font-size:14px;
- opacity:0.95;
- letter-spacing:0.6px;
-}
-.hero-left h1{
- margin:0;
- font-size:34px;
- line-height:1;
- font-weight:700;
- letter-spacing:-0.6px;
- text-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.hero .create-btn{
- background: rgba(255,255,255,0.98);
- color: var(--orange-2);
- border:none;
- padding:10px 16px;
- border-radius:999px;
- font-weight:700;
- cursor:pointer;
- box-shadow:0 6px 18px rgba(0,0,0,0.12);
- transition: transform .14s ease;
- margin-left:6px;
-}
-.hero .create-btn:hover{ transform:translateY(-3px); }
-.hero-art{
- position:absolute;
- left:50%;
- transform:translateX(-50%);
- bottom:-28px;
- display:flex;
- gap:-28px;
- pointer-events:none;
-}
-.mini-card{
- width:120px;
- height:72px;
- border-radius:12px;
- box-shadow:var(--card-shadow);
- display:flex;
- flex-direction:column;
- justify-content:center;
- align-items:center;
- font-weight:600;
- color:#333;
- transform-origin:center;
- border:1px solid rgba(0,0,0,0.04);}
-.mini-card:nth-child(1){
- transform:rotate(-8deg) translateX(-20px);
- background: linear-gradient(180deg,#ffffff,#fff3f0);}
-.mini-card:nth-child(2){
- transform:rotate(2deg); z-index:2;
- background: linear-gradient(180deg,#ffffff,#eefcff);}
-.mini-card:nth-child(3){
- transform:rotate(8deg) translateX(20px);
- background: linear-gradient(180deg,#fffef6,#fff9e6);}
-.mini-card .q{ font-size:14px; opacity:0.9; }
-.mini-card .a{ font-size:11px; opacity:0.65; margin-top:6px; }
-.container{
- max-width:1200px;
- margin:60px auto 40px;
- padding:0 18px;
-}
-.levels{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
- gap:18px;
-}
-.level-card{
- background:white;
- border-radius:16px;
- padding:20px;
- display:flex;
- gap:12px;
- align-items:center;
- box-shadow: var(--card-shadow);
- cursor:pointer;
- transition: transform .16s ease, box-shadow .16s ease;
- border:1px solid rgba(0,0,0,0.03);}
-.level-card:hover{
- transform: translateY(-6px);
- box-shadow:0 14px 30px rgba(16,24,40,0.12);}
-.icon-square{
- width:72px;
- height:72px;
- border-radius:12px;
- display:flex;
- align-items:center;
- justify-content:center;
- flex-shrink:0;
- box-shadow:0 6px 18px rgba(0,0,0,0.06);
- color:white;
- font-size:28px;}
-.icon-blue{ background: linear-gradient(180deg,#4e73df,#6c8cff); }
-.icon-teal{ background: linear-gradient(180deg,#06b6d4,#3dd6e9);}
-.icon-green{ background: linear-gradient(180deg,#16a34a,#4ade80);}
-.icon-amber{ background: linear-gradient(180deg,#f59e0b,#fbbf24);}
-.level-body h3{ margin:0; font-size:18px; }
-.level-body p{ margin:6px 0 0; font-size:13px; color:#666; }
-.modal{
- display:none;
- position:fixed;
- inset:0;
- background:rgba(0,0,0,0.55);
- align-items:center;
- justify-content:center;
- z-index:60;
-}
-.modal .card{
- background:white;
- border-radius:12px;
- padding:20px;
- width:min(420px,92%);
- box-shadow:var(--card-shadow);
- position:relative;
-}
-.modal h2{ margin:0 0 12px; }
-.chapter-list{
- list-style:none;
- padding:0; margin:0;
- display:flex; flex-direction:column; gap:8px;}
-.chapter-list li{
- padding:10px 12px;
- border-radius:8px;
- background:#f7f7f8;
- cursor:pointer;
- border:1px solid rgba(0,0,0,0.03);}
-.chapter-list li:hover{ background:#eef3ff;}
-.modal .start-btn{
- margin-top:12px;
- background: linear-gradient(90deg,#2ecc71,#16a34c);
- color:white;
- border:none;
- padding:10px 14px;
- border-radius:10px;
- cursor:pointer;
- font-weight:700;}
-.modal .close{
- position:absolute; top:8px; right:10px;
- font-size:20px; cursor:pointer; color:#666; }
-#createSection{
- display:none;
- max-width:980px;
- margin:26px auto;
- border-radius:14px;
- padding:18px;
- background:transparent;
-}
-#createSection textarea{ background:white; }
-textarea{
- width:100%; min-height:90px;
- padding:10px;
- border-radius:10px;
- border:1px solid #e6e6e9;
- resize:vertical;
- font-size:14px;
-}
-input[type=file]{ display:block; }
-.muted{ color:#666; font-size:13px; margin-top:8px; }
-.controls{
- display:flex; gap:8px; margin-top:10px; align-items:center;
-}
-.btn{
- padding:8px 12px;
- border-radius:10px;
- border:none;
- cursor:pointer;
- font-weight:700;
-}
-.btn-add{
- background: linear-gradient(90deg,var(--orange-1),var(--orange-2));
- color:white;
-}
-.btn-secondary{ background:#f3f4f6; color:#111; }
-#cardsList{
- margin-top:14px;
- display:flex;
- gap:12px;
- flex-wrap:wrap;
- justify-content:center;
-}
-.flashcard{
- width:220px; height:140px;
- perspective:1000px;
- cursor:pointer;
-}
-.flashcard-inner{
- width:100%; height:100%;
- position:relative;
- transition: transform .6s;
- transform-style:preserve-3d;
-}
-.flashcard.flipped .flashcard-inner{ transform: rotateY(180deg); }
-.front, .back {
- position:absolute; inset:0;
- border-radius:12px;
- backface-visibility:hidden;
- display:flex; align-items:center; justify-content:center;
- text-align:center; padding:12px; font-weight:600;
- box-shadow:0 6px 14px rgba(0,0,0,0.08);}
-.front{
- background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
-}
-.back{
- background: linear-gradient(180deg,#eef7ff,#e6f0ff);
- color:#222;
- transform: rotateY(180deg);
-}
-@media (max-width:720px){
- .hero-inner{
-  flex-direction:column; align-items:flex-start; gap:10px; padding-bottom:20px;}
- .hero-art{ left:50%; transform:translateX(-50%); bottom:-24px;}
- .level-card{ padding:16px;}
- .icon-square{ width:56px;height:56px; border-radius:10px; font-size:22px;}
- .mini-card{ width:100px; height:60px;}
-}
+body{font-family:sans-serif;margin:0;}
+.container{max-width:1200px;margin:20px auto;padding:0 18px;}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+.level-card{background:white;border-radius:12px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,0.1);cursor:pointer;text-align:center;}
+.flashcard{width:220px;height:140px;perspective:1000px;cursor:pointer;display:inline-block;margin:8px;}
+.flashcard-inner{width:100%;height:100%;position:relative;transition:transform .6s;transform-style:preserve-3d;}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+.front,.back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;
+display:flex;align-items:center;justify-content:center;padding:12px;font-weight:600;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.front{background:#fff7ef;color:#222;}
+.back{background:#e6f0ff;color:#222;transform:rotateY(180deg);}
+button{padding:8px 14px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:10px;}
+.start-btn{background:#16a34a;color:white;}
+#progress{margin-top:12px;font-weight:600;}
 </style>
 </head>
 <body>
-<header class="hero" role="banner">
- <div class="hero-inner">
-  <div class="hero-left">
-   <div class="small">Les cartes</div>
-   <h1>Flashcards</h1>
-  </div>
-  <div>
-   <button class="create-btn" onclick="showLevels()">📚 Étudier</button>
-   <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button>
-  </div>
- </div>
- <div class="hero-art" aria-hidden="true">
-  <div class="mini-card"><div class="q">f(x)=x²</div><div class="a">→ dérivée 2x</div></div>
-  <div class="mini-card"><div class="q">(a+b)²</div><div class="a">= a² + 2ab + b²</div></div>
-  <div class="mini-card"><div class="q">sin²+cos²</div><div class="a">=1</div></div>
- </div>
-</header>
-<main class="container" role="main">
+
+<main class="container">
+ <!-- Niveaux -->
  <section id="levelsSection">
-  <div class="levels" id="levelsGrid">
-   <article class="level-card" onclick="openModal('Seconde')">
-    <div class="icon-square icon-blue">S</div>
-    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Première')">
-    <div class="icon-square icon-teal">1</div>
-    <div class="level-body"><h3>Première</h3><p class="muted">Suites / Probabilités / Analyse</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale')">
-    <div class="icon-square icon-green">T</div>
-    <div class="level-body"><h3>Terminale</h3><p class="muted">Dérivées / Intégrales / Logarithmes</p></div>
-   </article>
+  <div class="levels">
+   <article class="level-card" onclick="openModal('Seconde')"><h3>Seconde</h3></article>
+   <article class="level-card" onclick="openModal('Première')"><h3>Première</h3></article>
+   <article class="level-card" onclick="openModal('Terminale')"><h3>Terminale</h3></article>
   </div>
  </section>
- <section id="createSection" aria-hidden="true">
-  <h2>Créer / Réviser les cartes</h2>
-  <label class="muted">Recto</label>
-  <textarea id="frontText" placeholder="Texte recto"></textarea>
-  <input id="frontImg" type="file" accept="image/*">
-  <label class="muted">Verso</label>
-  <textarea id="backText" placeholder="Texte verso"></textarea>
-  <input id="backImg" type="file" accept="image/*">
-  <div class="controls">
-   <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
-   <button class="btn btn-secondary" onclick="exportDeck()">Exporter</button>
-   <button class="btn btn-secondary" id="importBtn">Importer</button>
-   <button class="btn btn-add" id="reviseBtn">Réviser</button>
-  </div>
-  <div id="cardsList" aria-live="polite"></div>
-  <input type="file" id="importFile" accept=".json" style="display:none">
+
+ <!-- Etudier -->
+ <section id="studySection" style="display:none;">
+  <h2 id="studyTitle"></h2>
+  <button class="start-btn" onclick="startCards()">▶️ Commencer la révision</button>
+  <div id="progress"></div>
+  <div id="studyCards" style="margin-top:20px;"></div>
+  <button onclick="backToLevels()" style="margin-top:20px;">⬅️ Retour</button>
  </section>
 </main>
-<div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-hidden="true">
- <div class="card">
-  <div class="close" onclick="closeModal()">✕</div>
-  <h2 id="modalTitle">Chapitres</h2>
-  <ul class="chapter-list" id="chapterList"></ul>
-  <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
+
+<!-- Modal choix de chapitre -->
+<div class="modal" id="chapterModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;">
+ <div style="background:white;padding:20px;border-radius:12px;min-width:250px;">
+  <h2 id="modalTitle"></h2>
+  <ul id="chapterList" style="list-style:none;padding:0;"></ul>
+  <button class="start-btn" onclick="startRevision()">Commencer</button>
+  <button onclick="closeModal()">Fermer</button>
  </div>
 </div>
+
 <script>
+// --- Chapitres disponibles ---
 const chapters = {
- "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
- "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"],
- "Terminale":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales","Chapitre 3 : Logarithmes"]
+ "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions"],
+ "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités"],
+ "Terminale":["Chapitre 1 : Dérivées","Chapitre 2 : Intégrales"]
 };
 
+// --- Jeux de cartes ---
 const chapterDecks = {
  "Seconde Chapitre 1 : Bases":[
-   { front:"f(x)=x²", back:"→ dérivée 2x", frontImg:"", backImg:"" },
-   { front:"(a+b)²", back:"= a² + 2ab + b²", frontImg:"", backImg:"" },
-   { front:"sin²+cos²", back:"=1", frontImg:"", backImg:"" }
+   { front:"f(x)=x²", back:"f'(x)=2x" },
+   { front:"(a+b)²", back:"a² + 2ab + b²" },
+   { front:"sin²θ+cos²θ", back:"=1" }
  ]
 };
 
-let currentLevel = null;
-let selectedChapter = null;
-let deck = [];
+let currentLevel=null;
+let selectedChapter=null;
+let deck=[];
+let currentIndex=0;
 
+// --- Ouvrir la fenêtre des chapitres ---
 function openModal(level){
- currentLevel = level;
- selectedChapter = null;
- document.getElementById('modalTitle').textContent = level + " — Chapitres";
- const list = document.getElementById('chapterList');
- list.innerHTML = '';
- (chapters[level] || []).forEach(chap => {
-  const li = document.createElement('li');
-  li.textContent = chap;
-  li.onclick = () => {
-   Array.from(list.children).forEach(c => c.style.background = '');
-   li.style.background = '#dfefff';
-   selectedChapter = chap;
-  };
+ currentLevel=level;
+ selectedChapter=null;
+ const list=document.getElementById('chapterList');
+ list.innerHTML='';
+ (chapters[level]||[]).forEach(ch=>{
+  const li=document.createElement('li');
+  li.textContent=ch;
+  li.style.padding="6px";
+  li.style.cursor="pointer";
+  li.onclick=()=>{selectedChapter=ch; Array.from(list.children).forEach(c=>c.style.background=""); li.style.background="#dfefff";};
   list.appendChild(li);
  });
- const modal = document.getElementById('chapterModal');
- modal.style.display = 'flex';
- modal.setAttribute('aria-hidden','false');
+ document.getElementById('modalTitle').textContent=level+" — Chapitres";
+ document.getElementById('chapterModal').style.display="flex";
 }
 
-function closeModal(){
- const modal = document.getElementById('chapterModal');
- modal.style.display = 'none';
- modal.setAttribute('aria-hidden','true');
- selectedChapter = null;
-}
+function closeModal(){ document.getElementById('chapterModal').style.display="none"; }
 
+// --- Lancer une révision ---
 function startRevision(){
- if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
- const key = currentLevel + " " + selectedChapter;
- deck = chapterDecks[key] || [];
- if(deck.length===0){ alert("Aucune carte pour ce chapitre"); return; }
- renderCardsPreview();
- toggleCreate();
+ if(!selectedChapter){alert("Choisis un chapitre");return;}
+ const key=currentLevel+" "+selectedChapter;
+ deck=chapterDecks[key]||[];
+ if(deck.length===0){alert("Pas de cartes pour ce chapitre");return;}
  closeModal();
+ document.getElementById('levelsSection').style.display="none";
+ document.getElementById('studySection').style.display="block";
+ document.getElementById('studyTitle').textContent=currentLevel+" — "+selectedChapter;
+ document.getElementById('studyCards').innerHTML=""; 
+ document.getElementById('progress').textContent="";
+ currentIndex=0;
 }
 
-function toggleCreate(){
- const create = document.getElementById('createSection');
- const levels = document.getElementById('levelsSection');
- if(create.style.display==='block'){
-  create.style.display='none';
-  levels.style.display='block';
-  create.setAttribute('aria-hidden','true');
+// --- Commencer les cartes ---
+function startCards(){
+ if(deck.length===0){alert("Aucune carte");return;}
+ currentIndex=0;
+ showCard(currentIndex);
+ updateProgress();
+}
+
+// --- Afficher une carte ---
+function showCard(i){
+ const container=document.getElementById('studyCards');
+ container.innerHTML="";
+ const c=deck[i];
+ const div=document.createElement('div');
+ div.className="flashcard";
+ div.innerHTML=`<div class="flashcard-inner">
+   <div class="front">${c.front}</div>
+   <div class="back">${c.back}</div>
+ </div>`;
+ div.onclick=()=>div.classList.toggle('flipped');
+ container.appendChild(div);
+
+ if(i<deck.length-1){
+   const nextBtn=document.createElement('button');
+   nextBtn.textContent="Suivant";
+   nextBtn.className="start-btn";
+   nextBtn.onclick=()=>{currentIndex++; showCard(currentIndex); updateProgress();};
+   container.appendChild(nextBtn);
  } else {
-  create.style.display='block';
-  levels.style.display='none';
-  create.setAttribute('aria-hidden','false');
+   const endBtn=document.createElement('button');
+   endBtn.textContent="Terminer";
+   endBtn.className="start-btn";
+   endBtn.onclick=()=>{celebrate();};
+   container.appendChild(endBtn);
  }
 }
 
-function showLevels(){
- document.getElementById('createSection').style.display='none';
- document.getElementById('createSection').setAttribute('aria-hidden','true');
- document.getElementById('levelsSection').style.display='block';
+// --- Mise à jour progression ---
+function updateProgress(){
+ document.getElementById('progress').textContent=`Carte ${currentIndex+1}/${deck.length}`;
 }
 
-function escapeHtml(s){
- return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');
-}
-
-async function addCard(){
- const fTxt = document.getElementById('frontText').value.trim();
- const bTxt = document.getElementById('backText').value.trim();
- const fFile = document.getElementById('frontImg').files[0];
- const bFile = document.getElementById('backImg').files[0];
- let fImg="", bImg="";
- if(fFile) fImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(fFile);});
- if(bFile) bImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(bFile);});
- if(!fTxt && !bTxt && !fImg && !bImg){
-  alert("Ajoute du texte ou une image."); return;
+// --- Confettis ---
+function celebrate(){
+ const confetti=document.createElement('div');
+ confetti.style.position='fixed';
+ confetti.style.top=0;
+ confetti.style.left=0;
+ confetti.style.width='100%';
+ confetti.style.height='100%';
+ confetti.style.pointerEvents='none';
+ confetti.style.zIndex=2000;
+ document.body.appendChild(confetti);
+ for(let i=0;i<100;i++){
+   const c=document.createElement('div');
+   c.style.position='absolute';
+   c.style.width='8px';
+   c.style.height='8px';
+   c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+   c.style.left=Math.random()*window.innerWidth+'px';
+   c.style.top=Math.random()*window.innerHeight+'px';
+   c.style.opacity=1;
+   c.style.borderRadius='50%';
+   c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
+   confetti.appendChild(c);
+   setTimeout(()=>{
+     c.style.top=window.innerHeight+'px';
+     c.style.opacity=0;
+   },10);
  }
- deck.push({front:fTxt, back:bTxt, frontImg:fImg, backImg:bImg});
- renderCardsPreview();
- document.getElementById('frontText').value='';
- document.getElementById('backText').value='';
- document.getElementById('frontImg').value='';
- document.getElementById('backImg').value='';
+ setTimeout(()=>{document.body.removeChild(confetti);alert("Bravo 🎉 Tu as fini la révision !");},3000);
 }
 
-function renderCardsPreview(){
- const list = document.getElementById('cardsList');
- list.innerHTML='';
- deck.forEach(c=>{
-  const div=document.createElement('div');
-  div.className='flashcard';
-  div.innerHTML=`<div class="flashcard-inner">
-   <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
-   <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
-  </div>`;
-  div.addEventListener('click',()=>div.classList.toggle('flipped'));
-  list.appendChild(div);
- });
+// --- Retour aux niveaux ---
+function backToLevels(){
+ document.getElementById('studySection').style.display="none";
+ document.getElementById('levelsSection').style.display="block";
 }
-
-function exportDeck(){
- if(deck.length===0){ alert("Aucune carte"); return; }
- const blob = new Blob([JSON.stringify(deck)],{type:"application/json"});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download="deck.json";
- a.click();
-}
-
-document.getElementById('importBtn').addEventListener('click',()=>{ document.getElementById('importFile').click(); });
-document.getElementById('importFile').addEventListener('change',evt=>{
- const f=evt.target.files[0]; if(!f) return;
- const fr=new FileReader();
- fr.onload=e=>{ try{ deck=JSON.parse(e.target.result); renderCardsPreview(); }catch{ alert("Fichier invalide"); } };
- fr.readAsText(f);
-});
-document.getElementById('addCardBtn').addEventListener('click',addCard);
 </script>
 </body>
 </html>
