@@ -214,6 +214,7 @@ input[type=file]{ display:block; }
 .muted{ color:#666; font-size:13px; margin-top:8px; }
 .controls{
  display:flex; gap:8px; margin-top:10px; align-items:center;
+ flex-wrap:wrap;
 }
 .btn{
  padding:8px 12px;
@@ -355,6 +356,7 @@ input[type=file]{ display:block; }
    <button class="btn btn-secondary" id="exportBtn">Exporter JSON</button>
    <button class="btn btn-secondary" id="importBtn">Importer JSON</button>
    <button class="btn btn-add" id="reviseBtn">Réviser</button>
+   <button class="btn btn-secondary" id="resetBtn">Réinitialiser</button>
   </div>
   <div id="cardsList" aria-live="polite"></div>
   <input type="file" id="importFile" accept=".json" style="display:none">
@@ -385,17 +387,22 @@ const chapters = {
  "CAPES":["Chapitre 1 : Analyse","Chapitre 2 : Algèbre","Chapitre 3 : Didactique"]
 };
 
-const chapterDecks = {
- "Seconde Chapitre 1 : Bases":[
-   { front:"f(x)=x^2", back:"\\text{dérivée } 2x", frontImg:"", backImg:"" },
-   { front:"(a+b)^2", back:"a^2 + 2ab + b^2", frontImg:"", backImg:"" },
-   { front:"\\sin^2\\theta + \\cos^2\\theta", back:"1", frontImg:"", backImg:"" }
- ]
-};
-
 let currentLevel = null;
 let selectedChapter = null;
 let deck = [];
+
+function saveDeck(){
+    if(currentLevel && selectedChapter){
+        const key = currentLevel + " " + selectedChapter;
+        localStorage.setItem(key, JSON.stringify(deck));
+    }
+}
+
+function loadDeck(level, chapter){
+    const key = level + " " + chapter;
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : [];
+}
 
 function openModal(level){
  currentLevel = level;
@@ -427,8 +434,7 @@ function closeModal(){
 
 function startRevision(){
  if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
- const key = currentLevel + " " + selectedChapter;
- deck = chapterDecks[key] || [];
+ deck = loadDeck(currentLevel, selectedChapter);
  if(deck.length===0){ alert("Aucune carte pour ce chapitre"); return; }
  renderCardsPreview();
  toggleCreate();
@@ -471,6 +477,7 @@ async function addCard(){
   alert("Ajoute du texte ou une image."); return;
  }
  deck.push({front:fTxt, back:bTxt, frontImg:fImg, backImg:bImg});
+ saveDeck();
  renderCardsPreview();
  document.getElementById('frontText').value='';
  document.getElementById('backText').value='';
@@ -500,6 +507,36 @@ function renderCardsPreview(){
 }
 
 document.getElementById('addCardBtn').addEventListener('click', addCard);
+
+/* Export / Import JSON */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+ if(deck.length===0){ alert("Aucune carte à exporter."); return; }
+ const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(deck));
+ const dl = document.createElement('a');
+ dl.setAttribute('href',dataStr);
+ dl.setAttribute('download',currentLevel+"_"+selectedChapter+".json");
+ dl.click();
+});
+
+document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async (e)=>{
+ const file = e.target.files[0];
+ if(!file) return;
+ const text = await file.text();
+ try{
+   const imported = JSON.parse(text);
+   if(Array.isArray(imported)){ deck=imported; saveDeck(); renderCardsPreview();}
+ }catch(err){ alert("Fichier JSON invalide."); }
+ e.target.value='';
+});
+
+/* Réinitialiser */
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+ if(!confirm("Supprimer toutes les cartes de ce chapitre ?")) return;
+ deck=[];
+ saveDeck();
+ renderCardsPreview();
+});
 
 /* ---------------- Mode révision avec confettis ----------------- */
 document.getElementById('reviseBtn').addEventListener('click', startRevisionMode);
