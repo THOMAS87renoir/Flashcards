@@ -295,7 +295,50 @@ input[type=file]{ display:block; }
 <main class="container" role="main">
  <section id="levelsSection">
   <div class="levels" id="levelsGrid">
-   <!-- tes cartes de niveau ici... identiques à ton code original -->
+   <article class="level-card" onclick="openModal('6ème')">
+    <div class="icon-square icon-blue">6</div>
+    <div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('5ème')">
+    <div class="icon-square icon-teal">5</div>
+    <div class="level-body"><h3>5ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('4ème')">
+    <div class="icon-square icon-green">4</div>
+    <div class="level-body"><h3>4ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('3ème')">
+    <div class="icon-square icon-amber">3</div>
+    <div class="level-body"><h3>3ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Seconde')">
+    <div class="icon-square icon-blue">S</div>
+    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('1ère')">
+    <div class="icon-square icon-teal">1</div>
+    <div class="level-body"><h3>1ère générale</h3><p class="muted">Mathématiques générales</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('1ère spé')">
+    <div class="icon-square icon-green">1S</div>
+    <div class="level-body"><h3>1ère spécialité</h3><p class="muted">Spécialité Maths</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale math com')">
+    <div class="icon-square icon-amber">TMC</div>
+    <div class="level-body"><h3>Terminale math complète</h3><p class="muted">Toutes notions</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale spé')">
+    <div class="icon-square icon-blue">TS</div>
+    <div class="level-body"><h3>Terminale spécialité</h3><p class="muted">Spécialité Maths</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale experte')">
+    <div class="icon-square icon-teal">TE</div>
+    <div class="level-body"><h3>Terminale experte</h3><p class="muted">Option avancée</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('CAPES')">
+    <div class="icon-square icon-green">CAP</div>
+    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation concours</p></div>
+   </article>
   </div>
  </section>
 
@@ -458,21 +501,13 @@ function renderCardsPreview(){
 
 document.getElementById('addCardBtn').addEventListener('click', addCard);
 
-/* ---------------- Mode révision avec flip et mélange ----------------- */
+/* ---------------- Mode révision avec confettis ----------------- */
 document.getElementById('reviseBtn').addEventListener('click', startRevisionMode);
-
-function shuffle(array){
- for(let i=array.length-1;i>0;i--){
-  const j=Math.floor(Math.random()*(i+1));
-  [array[i],array[j]]=[array[j],array[i]];
- }
- return array;
-}
 
 function startRevisionMode(){
     if(deck.length===0){ alert("Aucune carte à réviser !"); return; }
 
-    let shuffled = shuffle([...deck]);
+    let shuffled = [...deck];
     let idx = 0;
     let correct = 0;
     let incorrect = 0;
@@ -492,26 +527,13 @@ function startRevisionMode(){
     cardDiv.style.textAlign='center';
     cardDiv.style.position='relative';
 
-    const flashcard = document.createElement('div');
-    flashcard.className = 'flashcard';
-    flashcard.style.width='300px';
-    flashcard.style.height='180px';
-    flashcard.style.margin='auto';
-
-    const inner = document.createElement('div');
-    inner.className = 'flashcard-inner';
-
     const frontEl = document.createElement('div');
-    frontEl.className='front';
     const backEl = document.createElement('div');
-    backEl.className='back';
-
-    inner.appendChild(frontEl);
-    inner.appendChild(backEl);
-    flashcard.appendChild(inner);
-    cardDiv.appendChild(flashcard);
-
-    flashcard.addEventListener('click',()=>flashcard.classList.toggle('flipped'));
+    frontEl.style.marginBottom='12px';
+    backEl.style.marginBottom='12px';
+    backEl.style.display='none';
+    frontEl.style.fontWeight='600';
+    backEl.style.fontWeight='600';
 
     const correctBtn = document.createElement('button');
     correctBtn.textContent='✔️ Correcte';
@@ -534,8 +556,10 @@ function startRevisionMode(){
     btnDiv.appendChild(correctBtn);
     btnDiv.appendChild(incorrectBtn);
 
-    cardDiv.appendChild(btnDiv);
     cardDiv.appendChild(closeBtn);
+    cardDiv.appendChild(frontEl);
+    cardDiv.appendChild(backEl);
+    cardDiv.appendChild(btnDiv);
     modal.appendChild(cardDiv);
     document.body.appendChild(modal);
 
@@ -543,7 +567,7 @@ function startRevisionMode(){
         const c = shuffled[i];
         frontEl.innerHTML = (c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:'') + escapeHtml(c.front||'');
         backEl.innerHTML = (c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:'') + escapeHtml(c.back||'');
-        inner.classList.remove('flipped');
+        backEl.style.display='none';
         renderMathInElement(frontEl);
         renderMathInElement(backEl);
     }
@@ -557,6 +581,36 @@ function startRevisionMode(){
 
     function endRevision(){
         if(correct===shuffled.length){
+            const confetti=document.createElement('div');
+            confetti.style.position='fixed';
+            confetti.style.top=0;
+            confetti.style.left=0;
+            confetti.style.width='100%';
+            confetti.style.height='100%';
+            confetti.style.pointerEvents='none';
+            confetti.style.zIndex=2000;
+            document.body.appendChild(confetti);
+
+            for(let i=0;i<150;i++){
+                const c=document.createElement('div');
+                c.style.position='absolute';
+                c.style.width='10px';
+                c.style.height='10px';
+                c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+                c.style.left=Math.random()*window.innerWidth+'px';
+                c.style.top=Math.random()*window.innerHeight+'px';
+                c.style.opacity=1;
+                c.style.transform=`rotate(${Math.random()*360}deg)`;
+                c.style.borderRadius='50%';
+                c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
+                confetti.appendChild(c);
+                setTimeout(()=>{ 
+                    c.style.top=window.innerHeight+'px'; 
+                    c.style.opacity=0; 
+                    c.style.transform=`rotate(${Math.random()*720}deg)`; 
+                },10);
+            }
+            setTimeout(()=>{ document.body.removeChild(confetti); },3000);
             alert("Félicitations ! Toutes les cartes sont correctes 🎉");
         } else {
             alert("Révision terminée !");
