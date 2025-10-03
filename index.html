@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <title>Flashcards</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- KaTeX pour LaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+
 <style>
 :root{
  --orange-1: #ff9f1c;
@@ -246,6 +253,7 @@ input[type=file]{ display:block; }
  display:flex; align-items:center; justify-content:center;
  text-align:center; padding:12px; font-weight:600;
  box-shadow:0 6px 14px rgba(0,0,0,0.08);
+ overflow-wrap: break-word;
 }
 .front{
  background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
@@ -307,40 +315,16 @@ input[type=file]{ display:block; }
     <div class="icon-square icon-blue">S</div>
     <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
    </article>
-   <article class="level-card" onclick="openModal('Première')">
-    <div class="icon-square icon-teal">1</div>
-    <div class="level-body"><h3>Première</h3><p class="muted">Suites / Probabilités / Analyse</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Première Spé')">
-    <div class="icon-square icon-green">1S</div>
-    <div class="level-body"><h3>Première Spé</h3><p class="muted">Analyse / Probabilités</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale Spé')">
-    <div class="icon-square icon-amber">TS</div>
-    <div class="level-body"><h3>Terminale Spé</h3><p class="muted">Analyse / Probabilités</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale Comp')">
-    <div class="icon-square icon-blue">TC</div>
-    <div class="level-body"><h3>Terminale Comp</h3><p class="muted">Calcul / Analyse</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale Experte')">
-    <div class="icon-square icon-teal">TE</div>
-    <div class="level-body"><h3>Terminale Experte</h3><p class="muted">Analyse avancée</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('CAPES')">
-    <div class="icon-square icon-green">C</div>
-    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation examen</p></div>
-   </article>
   </div>
  </section>
 
  <section id="createSection" aria-hidden="true">
   <h2>Créer / Réviser les cartes</h2>
   <label class="muted">Recto</label>
-  <textarea id="frontText" placeholder="Texte recto"></textarea>
+  <textarea id="frontText" placeholder="Texte recto (LaTeX possible avec $...$)"></textarea>
   <input id="frontImg" type="file" accept="image/*">
   <label class="muted">Verso</label>
-  <textarea id="backText" placeholder="Texte verso"></textarea>
+  <textarea id="backText" placeholder="Texte verso (LaTeX possible avec $...$)"></textarea>
   <input id="backImg" type="file" accept="image/*">
   <div class="controls">
    <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
@@ -368,20 +352,14 @@ const chapters = {
  "5ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "4ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
  "3ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
- "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
- "Première":["Chapitre 1 : Suites","Chapitre 2 : Probabilités","Chapitre 3 : Analyse"],
- "Première Spé":["Chapitre 1","Chapitre 2"],
- "Terminale Spé":["Chapitre 1","Chapitre 2"],
- "Terminale Comp":["Chapitre 1","Chapitre 2"],
- "Terminale Experte":["Chapitre 1","Chapitre 2"],
- "CAPES":["Chapitre 1","Chapitre 2"]
+ "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"]
 };
 
 const chapterDecks = {
  "Seconde Chapitre 1 : Bases":[
-   { front:"f(x)=x²", back:"→ dérivée 2x", frontImg:"", backImg:"" },
-   { front:"(a+b)²", back:"= a² + 2ab + b²", frontImg:"", backImg:"" },
-   { front:"sin²+cos²", back:"=1", frontImg:"", backImg:"" }
+   { front:"f(x)=x^2", back:"\\text{dérivée } 2x", frontImg:"", backImg:"" },
+   { front:"(a+b)^2", back:"a^2 + 2ab + b^2", frontImg:"", backImg:"" },
+   { front:"\\sin^2\\theta + \\cos^2\\theta", back:"1", frontImg:"", backImg:"" }
  ]
 };
 
@@ -485,80 +463,14 @@ function renderCardsPreview(){
   div.addEventListener('click',()=>div.classList.toggle('flipped'));
   list.appendChild(div);
  });
+ renderMathInElement(list, {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ]
+ });
 }
 
-// ==========================================================
-// Révision interactive
-// ==========================================================
-function startRevisionMode() {
-    if(deck.length === 0){ alert("Aucune carte à réviser."); return; }
-    reviewDeck = [...deck];
-    reviewIndex = 0;
-    showReviewCard();
-}
-
-function showReviewCard() {
-    if(reviewIndex >= reviewDeck.length){
-        alert("Révision terminée !");
-        renderCardsPreview();
-        return;
-    }
-    const card = reviewDeck[reviewIndex];
-    const front = escapeHtml(card.front || '');
-    const back = escapeHtml(card.back || '');
-    const fImg = card.frontImg ? `<img src="${card.frontImg}" style="max-width:90%;max-height:100px"><br>` : '';
-    const bImg = card.backImg ? `<img src="${card.backImg}" style="max-width:90%;max-height:100px"><br>` : '';
-    
-    const flashcardInner = document.createElement('div');
-    flashcardInner.className = 'flashcard-inner';
-    flashcardInner.innerHTML = `<div class="front">${fImg}${front}</div>
-                                <div class="back">${bImg}${back}</div>`;
-    flashcardInner.addEventListener('click', () => flashcardInner.classList.toggle('flipped'));
-
-    const container = document.getElementById('cardsList');
-    container.innerHTML = '';
-    const flashcardDiv = document.createElement('div');
-    flashcardDiv.className = 'flashcard';
-    flashcardDiv.appendChild(flashcardInner);
-    container.appendChild(flashcardDiv);
-}
-
-// ==========================================================
-// Export / Import JSON
-// ==========================================================
-function exportDeckJSON(){
-    if(deck.length===0){ alert("Aucune carte à exporter."); return; }
-    const blob = new Blob([JSON.stringify(deck, null, 2)], {type:"application/json"});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "deck.json";
-    a.click();
-}
-
-function importDeckJSON(file){
-    const fr = new FileReader();
-    fr.onload = e => {
-        try {
-            deck = JSON.parse(e.target.result);
-            renderCardsPreview();
-            alert("Deck importé !");
-        } catch {
-            alert("Fichier JSON invalide !");
-        }
-    };
-    fr.readAsText(file);
-}
-
-// ==========================================================
-// Liens boutons
-// ==========================================================
-document.getElementById('reviseBtn').addEventListener('click', startRevisionMode);
-document.getElementById('exportBtn').addEventListener('click', exportDeckJSON);
-document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
-document.getElementById('importFile').addEventListener('change', evt => {
-    const file = evt.target.files[0];
-    if(file) importDeckJSON(file);
-});
 document.getElementById('addCardBtn').addEventListener('click', addCard);
 </script>
 </body>
