@@ -468,6 +468,41 @@ function renderCardsPreview(){
 }
 
 document.getElementById('addCardBtn').addEventListener('click', addCard);
+// Exporter le deck en JSON
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  if(deck.length===0){ alert("Aucune carte à exporter !"); return; }
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(deck));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", "flashcards.json");
+  dlAnchor.click();
+});
+
+// Importer un fichier JSON
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (event)=>{
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(Array.isArray(imported)){
+        deck = imported;
+        renderCardsPreview();
+        alert("Import réussi !");
+      } else {
+        alert("Fichier JSON invalide.");
+      }
+    } catch(err){
+      alert("Erreur lors de l'import : " + err);
+    }
+  };
+  reader.readAsText(file);
+});
 
 /* ---------------- Mode révision avec KaTeX ----------------- */
 function shuffle(array){
@@ -593,3 +628,4 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
 </script>
 </body>
 </html>
+
