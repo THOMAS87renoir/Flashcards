@@ -207,7 +207,7 @@ textarea{
  padding:10px;
  border-radius:10px;
  border:1px solid #e6e6e9;
-resize:vertical;
+ resize:vertical;
  font-size:14px;
 }
 input[type=file]{ display:block; }
@@ -254,6 +254,7 @@ input[type=file]{ display:block; }
  text-align:center; padding:12px; font-weight:600;
  box-shadow:0 6px 14px rgba(0,0,0,0.08);
  overflow-wrap: break-word;
+ word-break: break-word;
 }
 .front{
  background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
@@ -295,50 +296,17 @@ input[type=file]{ display:block; }
 <main class="container" role="main">
  <section id="levelsSection">
   <div class="levels" id="levelsGrid">
-   <article class="level-card" onclick="openModal('6ème')">
-    <div class="icon-square icon-blue">6</div>
-    <div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('5ème')">
-    <div class="icon-square icon-teal">5</div>
-    <div class="level-body"><h3>5ème</h3><p class="muted">Bases</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('4ème')">
-    <div class="icon-square icon-green">4</div>
-    <div class="level-body"><h3>4ème</h3><p class="muted">Bases</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('3ème')">
-    <div class="icon-square icon-amber">3</div>
-    <div class="level-body"><h3>3ème</h3><p class="muted">Bases</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Seconde')">
-    <div class="icon-square icon-blue">S</div>
-    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('1ère')">
-    <div class="icon-square icon-teal">1</div>
-    <div class="level-body"><h3>1ère générale</h3><p class="muted">Mathématiques générales</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('1ère spé')">
-    <div class="icon-square icon-green">1S</div>
-    <div class="level-body"><h3>1ère spécialité</h3><p class="muted">Spécialité Maths</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale math com')">
-    <div class="icon-square icon-amber">TMC</div>
-    <div class="level-body"><h3>Terminale math complète</h3><p class="muted">Toutes notions</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale spé')">
-    <div class="icon-square icon-blue">TS</div>
-    <div class="level-body"><h3>Terminale spécialité</h3><p class="muted">Spécialité Maths</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('Terminale experte')">
-    <div class="icon-square icon-teal">TE</div>
-    <div class="level-body"><h3>Terminale experte</h3><p class="muted">Option avancée</p></div>
-   </article>
-   <article class="level-card" onclick="openModal('CAPES')">
-    <div class="icon-square icon-green">CAP</div>
-    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation concours</p></div>
-   </article>
+   <article class="level-card" onclick="openModal('6ème')"><div class="icon-square icon-blue">6</div><div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div></article>
+   <article class="level-card" onclick="openModal('5ème')"><div class="icon-square icon-teal">5</div><div class="level-body"><h3>5ème</h3><p class="muted">Bases</p></div></article>
+   <article class="level-card" onclick="openModal('4ème')"><div class="icon-square icon-green">4</div><div class="level-body"><h3>4ème</h3><p class="muted">Bases</p></div></article>
+   <article class="level-card" onclick="openModal('3ème')"><div class="icon-square icon-amber">3</div><div class="level-body"><h3>3ème</h3><p class="muted">Bases</p></div></article>
+   <article class="level-card" onclick="openModal('Seconde')"><div class="icon-square icon-blue">S</div><div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div></article>
+   <article class="level-card" onclick="openModal('1ère')"><div class="icon-square icon-teal">1</div><div class="level-body"><h3>1ère générale</h3><p class="muted">Mathématiques générales</p></div></article>
+   <article class="level-card" onclick="openModal('1ère spé')"><div class="icon-square icon-green">1S</div><div class="level-body"><h3>1ère spécialité</h3><p class="muted">Spécialité Maths</p></div></article>
+   <article class="level-card" onclick="openModal('Terminale math com')"><div class="icon-square icon-amber">TMC</div><div class="level-body"><h3>Terminale math complète</h3><p class="muted">Toutes notions</p></div></article>
+   <article class="level-card" onclick="openModal('Terminale spé')"><div class="icon-square icon-blue">TS</div><div class="level-body"><h3>Terminale spécialité</h3><p class="muted">Spécialité Maths</p></div></article>
+   <article class="level-card" onclick="openModal('Terminale experte')"><div class="icon-square icon-teal">TE</div><div class="level-body"><h3>Terminale experte</h3><p class="muted">Option avancée</p></div></article>
+   <article class="level-card" onclick="openModal('CAPES')"><div class="icon-square icon-green">CAP</div><div class="level-body"><h3>CAPES</h3><p class="muted">Préparation concours</p></div></article>
   </div>
  </section>
 
@@ -545,7 +513,6 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
   const flash=container.querySelector('.flashcard');
   flash.addEventListener('click',()=>flash.classList.toggle('flipped'));
   renderMathInElement(container);
-
  }
 
  showCard(idx);
@@ -606,11 +573,7 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
       c.style.borderRadius='50%';
       c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
       confetti.appendChild(c);
-      setTimeout(()=>{
-        c.style.top=window.innerHeight+'px';
-        c.style.opacity=0;
-        c.style.transform=`rotate(${Math.random()*720}deg)`;
-      },10);
+      setTimeout(()=>{ c.style.top=window.innerHeight+'px'; c.style.opacity=0; c.style.transform=`rotate(${Math.random()*720}deg)`; },10);
     }
     setTimeout(()=>{ document.body.removeChild(confetti); },3000);
     alert("Félicitations ! Toutes les cartes sont correctes 🎉");
@@ -621,8 +584,6 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
   document.body.removeChild(modal);
  }
 });
-
 </script>
 </body>
 </html>
-
