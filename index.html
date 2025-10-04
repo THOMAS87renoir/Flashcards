@@ -507,7 +507,17 @@ document.getElementById('reviseBtn').addEventListener('click', startRevisionMode
 function startRevisionMode(){
     if(deck.length===0){ alert("Aucune carte à réviser !"); return; }
 
-    let shuffled = [...deck];
+    
+    function shuffle(array){
+     for(let i=array.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [array[i],array[j]]=[array[j],array[i]];
+     }
+     return array;
+    }
+
+    let shuffled = shuffle([...deck]);
+
     let idx = 0;
     let correct = 0;
     let incorrect = 0;
@@ -527,13 +537,28 @@ function startRevisionMode(){
     cardDiv.style.textAlign='center';
     cardDiv.style.position='relative';
 
+    const flashcard = document.createElement('div');
+    flashcard.className = 'flashcard';
+    flashcard.style.width = '300px';
+    flashcard.style.height = '180px';
+    flashcard.style.margin = 'auto';
+
+    const inner = document.createElement('div');
+    inner.className = 'flashcard-inner';
+
     const frontEl = document.createElement('div');
+    frontEl.className = 'front';
     const backEl = document.createElement('div');
-    frontEl.style.marginBottom='12px';
-    backEl.style.marginBottom='12px';
-    backEl.style.display='none';
-    frontEl.style.fontWeight='600';
-    backEl.style.fontWeight='600';
+    backEl.className = 'back';
+
+    inner.appendChild(frontEl);
+    inner.appendChild(backEl);
+    flashcard.appendChild(inner);
+    cardDiv.insertBefore(flashcard, btnDiv);
+
+    // Ajouter le flip au clic
+    flashcard.addEventListener('click', ()=>flashcard.classList.toggle('flipped'));
+
 
     const correctBtn = document.createElement('button');
     correctBtn.textContent='✔️ Correcte';
@@ -567,9 +592,10 @@ function startRevisionMode(){
         const c = shuffled[i];
         frontEl.innerHTML = (c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:'') + escapeHtml(c.front||'');
         backEl.innerHTML = (c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:'') + escapeHtml(c.back||'');
-        backEl.style.display='none';
+        inner.classList.remove('flipped'); // toujours montrer le recto au début
         renderMathInElement(frontEl);
         renderMathInElement(backEl);
+
     }
 
     function nextCard(isCorrect){
@@ -626,3 +652,4 @@ function startRevisionMode(){
 </script>
 </body>
 </html>
+
