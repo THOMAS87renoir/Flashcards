@@ -1,311 +1,625 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>Flashcards</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<title>Flashcards</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <!-- KaTeX pour LaTeX -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+<!-- KaTeX pour LaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body);"></script>
 
-  <style>
-    :root {
-      --orange-1: #ff9f1c;
-      --orange-2: #ff6b35;
-      --bg-a: #a8edea;
-      --bg-b: #fed6e3;
-      --card-shadow: 0 8px 20px rgba(16,24,40,0.12);
-    }
+<style>
+:root{
+ --orange-1: #ff9f1c;
+ --orange-2: #ff6b35;
+ --bg-a: #a8edea;
+ --bg-b: #fed6e3;
+ --card-shadow: 0 8px 20px rgba(16,24,40,0.12);
+}
+html,body{
+ height:100%;
+ margin:0;
+ font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+ color:#222;
+ background: linear-gradient(90deg,var(--bg-a),var(--bg-b));
+ -webkit-font-smoothing:antialiased;
+}
+main{flex:1;}
+.hero{
+ background: linear-gradient(90deg,var(--orange-1),var(--orange-2));
+ color:white;
+ padding:28px 20px 56px 20px;
+ position:relative;
+ overflow:visible;
+ box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+.hero-inner{
+ max-width:1200px;
+ margin:0 auto;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+}
+.hero-left{
+ display:flex;
+ flex-direction:column;
+ gap:6px;
+}
+.hero-left .small{
+ font-size:14px;
+ opacity:0.95;
+ letter-spacing:0.6px;
+}
+.hero-left h1{
+ margin:0;
+ font-size:34px;
+ line-height:1;
+ font-weight:700;
+ letter-spacing:-0.6px;
+ text-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+.hero .create-btn{
+ background: rgba(255,255,255,0.98);
+ color: var(--orange-2);
+ border:none;
+ padding:10px 16px;
+ border-radius:999px;
+ font-weight:700;
+ cursor:pointer;
+ box-shadow:0 6px 18px rgba(0,0,0,0.12);
+ transition: transform .14s ease;
+ margin-left:6px;
+}
+.hero .create-btn:hover{ transform:translateY(-3px); }
+.hero-art{
+ position:absolute;
+ left:50%;
+ transform:translateX(-50%);
+ bottom:-28px;
+ display:flex;
+ gap:-28px;
+ pointer-events:none;
+}
+.mini-card{
+ width:120px;
+ height:72px;
+ border-radius:12px;
+ box-shadow:var(--card-shadow);
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ font-weight:600;
+ color:#333;
+ transform-origin:center;
+ border:1px solid rgba(0,0,0,0.04);
+}
+.mini-card:nth-child(1){ transform:rotate(-8deg) translateX(-20px); background: linear-gradient(180deg,#ffffff,#fff3f0);}
+.mini-card:nth-child(2){ transform:rotate(2deg); z-index:2; background: linear-gradient(180deg,#ffffff,#eefcff);}
+.mini-card:nth-child(3){ transform:rotate(8deg) translateX(20px); background: linear-gradient(180deg,#fffef6,#fff9e6);}
+.mini-card .q{ font-size:14px; opacity:0.9; }
+.mini-card .a{ font-size:11px; opacity:0.65; margin-top:6px; }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: #222;
-      background: linear-gradient(90deg, var(--bg-a), var(--bg-b));
-      -webkit-font-smoothing: antialiased;
-    }
-
-    main { flex: 1; }
-
-    .hero {
-      background: linear-gradient(90deg, var(--orange-1), var(--orange-2));
-      color: white;
-      padding: 28px 20px 56px 20px;
-      position: relative;
-      overflow: visible;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-
-    .hero-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .hero-left {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .hero-left .small { font-size: 14px; opacity: 0.95; letter-spacing: 0.6px; }
-    .hero-left h1 { margin: 0; font-size: 34px; line-height: 1; font-weight: 700; }
-
-    .hero .create-btn {
-      background: rgba(255,255,255,0.98);
-      color: var(--orange-2);
-      border: none;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-      transition: transform .14s ease;
-      margin-left: 6px;
-    }
-    .hero .create-btn:hover { transform: translateY(-3px); }
-
-    .hero-art {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -28px;
-      display: flex;
-      gap: -28px;
-      pointer-events: none;
-    }
-
-    .mini-card {
-      width: 120px; height: 72px; border-radius: 12px;
-      box-shadow: var(--card-shadow);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      font-weight: 600; color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 60px auto 40px; padding: 0 18px; }
-
-    .levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; }
-
-    .level-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      box-shadow: var(--card-shadow);
-      cursor: pointer;
-      transition: transform .16s ease, box-shadow .16s ease;
-    }
-    .level-card:hover { transform: translateY(-6px); }
-
-    .icon-square {
-      width: 72px; height: 72px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 28px;
-    }
-
-    #createSection { display: none; max-width: 980px; margin: 26px auto; padding: 18px; }
-
-    textarea {
-      width: 100%;
-      min-height: 90px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #e6e6e9;
-      resize: vertical;
-      font-size: 14px;
-    }
-
-    .flashcard {
-      width: 220px;
-      height: 140px;
-      perspective: 1000px;
-      cursor: pointer;
-    }
-
-    .flashcard-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transition: transform .6s;
-      transform-style: preserve-3d;
-    }
-
-    .flashcard.flipped .flashcard-inner {
-      transform: rotateY(180deg);
-    }
-
-    .front, .back {
-      position: absolute;
-      inset: 0;
-      border-radius: 12px;
-      backface-visibility: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 12px;
-      font-weight: 600;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-      overflow-wrap: break-word;
-    }
-
-    .front { background: #fff7ef; }
-    .back { background: #e6f0ff; transform: rotateY(180deg); }
-
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      align-items: center;
-      justify-content: center;
-      z-index: 60;
-    }
-
-  </style>
+.container{
+ max-width:1200px;
+ margin:60px auto 40px;
+ padding:0 18px;
+}
+.levels{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:18px;
+}
+.level-card{
+ background:white;
+ border-radius:16px;
+ padding:20px;
+ display:flex;
+ gap:12px;
+ align-items:center;
+ box-shadow: var(--card-shadow);
+ cursor:pointer;
+ transition: transform .16s ease, box-shadow .16s ease;
+ border:1px solid rgba(0,0,0,0.03);
+}
+.level-card:hover{
+ transform: translateY(-6px);
+ box-shadow:0 14px 30px rgba(16,24,40,0.12);
+}
+.icon-square{
+ width:72px;
+ height:72px;
+ border-radius:12px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex-shrink:0;
+ box-shadow:0 6px 18px rgba(0,0,0,0.06);
+ color:white;
+ font-size:28px;
+}
+.icon-blue{ background: linear-gradient(180deg,#4e73df,#6c8cff); }
+.icon-teal{ background: linear-gradient(180deg,#06b6d4,#3dd6e9);}
+.icon-green{ background: linear-gradient(180deg,#16a34a,#4ade80);}
+.icon-amber{ background: linear-gradient(180deg,#f59e0b,#fbbf24);}
+.level-body h3{ margin:0; font-size:18px; }
+.level-body p{ margin:6px 0 0; font-size:13px; color:#666; }
+.modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,0.55);
+ align-items:center;
+ justify-content:center;
+ z-index:60;
+}
+.modal .card{
+ background:white;
+ border-radius:12px;
+ padding:20px;
+ width:min(420px,92%);
+ box-shadow:var(--card-shadow);
+ position:relative;
+}
+.modal h2{ margin:0 0 12px; }
+.chapter-list{
+ list-style:none;
+ padding:0; margin:0;
+ display:flex; flex-direction:column; gap:8px;
+}
+.chapter-list li{
+ padding:10px 12px;
+ border-radius:8px;
+ background:#f7f7f8;
+ cursor:pointer;
+ border:1px solid rgba(0,0,0,0.03);
+}
+.chapter-list li:hover{ background:#eef3ff;}
+.modal .start-btn{
+ margin-top:12px;
+ background: linear-gradient(90deg,#2ecc71,#16a34c);
+ color:white;
+ border:none;
+ padding:10px 14px;
+ border-radius:10px;
+ cursor:pointer;
+ font-weight:700;
+}
+.modal .close{
+ position:absolute; top:8px; right:10px;
+ font-size:20px; cursor:pointer; color:#666; 
+}
+#createSection{
+ display:none;
+ max-width:980px;
+ margin:26px auto;
+ border-radius:14px;
+ padding:18px;
+ background:transparent;
+}
+#createSection textarea{ background:white; }
+textarea{
+ width:100%; min-height:90px;
+ padding:10px;
+ border-radius:10px;
+ border:1px solid #e6e6e9;
+resize:vertical;
+ font-size:14px;
+}
+input[type=file]{ display:block; }
+.muted{ color:#666; font-size:13px; margin-top:8px; }
+.controls{
+ display:flex; gap:8px; margin-top:10px; align-items:center;
+}
+.btn{
+ padding:8px 12px;
+ border-radius:10px;
+ border:none;
+ cursor:pointer;
+ font-weight:700;
+}
+.btn-add{
+ background: linear-gradient(90deg,var(--orange-1),var(--orange-2));
+ color:white;
+}
+.btn-secondary{ background:#f3f4f6; color:#111; }
+#cardsList{
+ margin-top:14px;
+ display:flex;
+ gap:12px;
+ flex-wrap:wrap;
+ justify-content:center;
+}
+.flashcard{
+ width:220px; height:140px;
+ perspective:1000px;
+ cursor:pointer;
+}
+.flashcard-inner{
+ width:100%; height:100%;
+ position:relative;
+ transition: transform .6s;
+ transform-style:preserve-3d;
+}
+.flashcard.flipped .flashcard-inner{ transform: rotateY(180deg); }
+.front, .back {
+ position:absolute; inset:0;
+ border-radius:12px;
+ backface-visibility:hidden;
+ display:flex; align-items:center; justify-content:center;
+ text-align:center; padding:12px; font-weight:600;
+ box-shadow:0 6px 14px rgba(0,0,0,0.08);
+ overflow-wrap: break-word;
+}
+.front{
+ background: linear-gradient(180deg,#ffffff,#fff7ef); color:#222;
+}
+.back{
+ background: linear-gradient(180deg,#eef7ff,#e6f0ff);
+ color:#222;
+ transform: rotateY(180deg);
+}
+@media (max-width:720px){
+ .hero-inner{
+  flex-direction:column; align-items:flex-start; gap:10px; padding-bottom:20px;}
+ .hero-art{ left:50%; transform:translateX(-50%); bottom:-24px;}
+ .level-card{ padding:16px;}
+ .icon-square{ width:56px;height:56px; border-radius:10px; font-size:22px;}
+ .mini-card{ width:100px; height:60px;}
+}
+</style>
 </head>
-
 <body>
-  <header class="hero" role="banner">
-    <div class="hero-inner">
-      <div class="hero-left">
-        <div class="small">Les cartes</div>
-        <h1>Flashcards</h1>
-      </div>
-      <div>
-        <button class="create-btn" onclick="showLevels()">📚 Étudier</button>
-        <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <section id="levelsSection">
-      <div class="levels" id="levelsGrid"></div>
-    </section>
-
-    <section id="createSection">
-      <h2>Créer / Réviser les cartes</h2>
-      <label class="muted">Recto</label>
-      <textarea id="frontText" placeholder="Texte recto (LaTeX possible avec $...$)"></textarea>
-      <input id="frontImg" type="file" accept="image/*">
-      <label class="muted">Verso</label>
-      <textarea id="backText" placeholder="Texte verso (LaTeX possible avec $...$)"></textarea>
-      <input id="backImg" type="file" accept="image/*">
-
-      <div class="controls">
-        <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
-        <button class="btn btn-secondary" id="exportBtn">Exporter JSON</button>
-        <button class="btn btn-secondary" id="importBtn">Importer JSON</button>
-        <button class="btn btn-add" id="reviseBtn">Réviser</button>
-      </div>
-
-      <div id="cardsList"></div>
-    </section>
-  </main>
-
-  <div class="modal" id="chapterModal">
-    <div class="card">
-      <div class="close" onclick="closeModal()">✕</div>
-      <h2 id="modalTitle">Chapitres</h2>
-      <ul class="chapter-list" id="chapterList"></ul>
-      <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
-    </div>
+<header class="hero" role="banner">
+ <div class="hero-inner">
+  <div class="hero-left">
+   <div class="small">Les cartes</div>
+   <h1>Flashcards</h1>
   </div>
+  <div>
+   <button class="create-btn" onclick="showLevels()">📚 Étudier</button>
+   <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button>
+  </div>
+ </div>
+ <div class="hero-art" aria-hidden="true">
+  <div class="mini-card"><div class="q">f(x)=x²</div><div class="a">→ dérivée 2x</div></div>
+  <div class="mini-card"><div class="q">(a+b)²</div><div class="a">= a² + 2ab + b²</div></div>
+  <div class="mini-card"><div class="q">sin²+cos²</div><div class="a">=1</div></div>
+ </div>
+</header>
 
-  <script>
-    // --- Données des niveaux et chapitres ---
-    const chapters = {
-      "Seconde": ["Chapitre 1 : Bases"]
-    };
-    const chapterDecks = {
-      "Seconde Chapitre 1 : Bases": [
-        { front: "f(x)=x^2", back: "\\text{dérivée } 2x" },
-        { front: "(a+b)^2", back: "a^2 + 2ab + b^2" },
-        { front: "\\sin^2\\theta + \\cos^2\\theta", back: "1" }
-      ]
-    };
+<main class="container" role="main">
+ <section id="levelsSection">
+  <div class="levels" id="levelsGrid">
+   <article class="level-card" onclick="openModal('6ème')">
+    <div class="icon-square icon-blue">6</div>
+    <div class="level-body"><h3>6ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('5ème')">
+    <div class="icon-square icon-teal">5</div>
+    <div class="level-body"><h3>5ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('4ème')">
+    <div class="icon-square icon-green">4</div>
+    <div class="level-body"><h3>4ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('3ème')">
+    <div class="icon-square icon-amber">3</div>
+    <div class="level-body"><h3>3ème</h3><p class="muted">Bases</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Seconde')">
+    <div class="icon-square icon-blue">S</div>
+    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('1ère')">
+    <div class="icon-square icon-teal">1</div>
+    <div class="level-body"><h3>1ère générale</h3><p class="muted">Mathématiques générales</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('1ère spé')">
+    <div class="icon-square icon-green">1S</div>
+    <div class="level-body"><h3>1ère spécialité</h3><p class="muted">Spécialité Maths</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale math com')">
+    <div class="icon-square icon-amber">TMC</div>
+    <div class="level-body"><h3>Terminale math complète</h3><p class="muted">Toutes notions</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale spé')">
+    <div class="icon-square icon-blue">TS</div>
+    <div class="level-body"><h3>Terminale spécialité</h3><p class="muted">Spécialité Maths</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('Terminale experte')">
+    <div class="icon-square icon-teal">TE</div>
+    <div class="level-body"><h3>Terminale experte</h3><p class="muted">Option avancée</p></div>
+   </article>
+   <article class="level-card" onclick="openModal('CAPES')">
+    <div class="icon-square icon-green">CAP</div>
+    <div class="level-body"><h3>CAPES</h3><p class="muted">Préparation concours</p></div>
+   </article>
+  </div>
+ </section>
 
-    let deck = [];
+ <section id="createSection" aria-hidden="true">
+  <h2>Créer / Réviser les cartes</h2>
+  <label class="muted">Recto</label>
+  <textarea id="frontText" placeholder="Texte recto (LaTeX possible avec $...$)"></textarea>
+  <input id="frontImg" type="file" accept="image/*">
+  <label class="muted">Verso</label>
+  <textarea id="backText" placeholder="Texte verso (LaTeX possible avec $...$)"></textarea>
+  <input id="backImg" type="file" accept="image/*">
+  <div class="controls">
+   <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
+   <button class="btn btn-secondary" id="exportBtn">Exporter JSON</button>
+   <button class="btn btn-secondary" id="importBtn">Importer JSON</button>
+   <button class="btn btn-add" id="reviseBtn">Réviser</button>
+  </div>
+  <div id="cardsList" aria-live="polite"></div>
+  <input type="file" id="importFile" accept=".json" style="display:none">
+ </section>
+</main>
 
-    function renderMath(container) {
-      renderMathInElement(container, {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "$", right: "$", display: false }
-        ]
-      });
+<div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-hidden="true">
+ <div class="card">
+  <div class="close" onclick="closeModal()">✕</div>
+  <h2 id="modalTitle">Chapitres</h2>
+  <ul class="chapter-list" id="chapterList"></ul>
+  <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
+ </div>
+</div>
+
+<script>
+const chapters = {
+ "6ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
+ "5ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
+ "4ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
+ "3ème":["Chapitre 1","Chapitre 2","Chapitre 3"],
+ "Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"],
+ "1ère":["Chapitre 1 : Analyse","Chapitre 2 : Algèbre","Chapitre 3 : Géométrie"],
+ "1ère spé":["Chapitre 1 : Analyse avancée","Chapitre 2 : Probabilités","Chapitre 3 : Trigonométrie"],
+ "Terminale math com":["Chapitre 1 : Suites","Chapitre 2 : Fonctions","Chapitre 3 : Statistiques"],
+ "Terminale spé":["Chapitre 1 : Intégrales","Chapitre 2 : Complexes","Chapitre 3 : Probabilités"],
+ "Terminale experte":["Chapitre 1 : Analyse avancée","Chapitre 2 : Géométrie avancée","Chapitre 3 : Algorithmique"],
+ "CAPES":["Chapitre 1 : Analyse","Chapitre 2 : Algèbre","Chapitre 3 : Didactique"]
+};
+
+const chapterDecks = {
+ "Seconde Chapitre 1 : Bases":[
+   { front:"f(x)=x^2", back:"\\text{dérivée } 2x", frontImg:"", backImg:"" },
+   { front:"(a+b)^2", back:"a^2 + 2ab + b^2", frontImg:"", backImg:"" },
+   { front:"\\sin^2\\theta + \\cos^2\\theta", back:"1", frontImg:"", backImg:"" }
+ ]
+};
+
+let currentLevel = null;
+let selectedChapter = null;
+let deck = [];
+
+function openModal(level){
+ currentLevel = level;
+ selectedChapter = null;
+ document.getElementById('modalTitle').textContent = level + " — Chapitres";
+ const list = document.getElementById('chapterList');
+ list.innerHTML = '';
+ (chapters[level] || []).forEach(chap => {
+  const li = document.createElement('li');
+  li.textContent = chap;
+  li.onclick = () => {
+   Array.from(list.children).forEach(c => c.style.background = '');
+   li.style.background = '#dfefff';
+   selectedChapter = chap;
+  };
+  list.appendChild(li);
+ });
+ const modal = document.getElementById('chapterModal');
+ modal.style.display = 'flex';
+ modal.setAttribute('aria-hidden','false');
+}
+
+function closeModal(){
+ const modal = document.getElementById('chapterModal');
+ modal.style.display = 'none';
+ modal.setAttribute('aria-hidden','true');
+ selectedChapter = null;
+}
+
+function startRevision(){
+ if(!selectedChapter){ alert("Sélectionne un chapitre"); return; }
+ const key = currentLevel + " " + selectedChapter;
+ deck = chapterDecks[key] || [];
+ if(deck.length===0){ alert("Aucune carte pour ce chapitre"); return; }
+ renderCardsPreview();
+ toggleCreate();
+ closeModal();
+}
+
+function toggleCreate(){
+ const create = document.getElementById('createSection');
+ const levels = document.getElementById('levelsSection');
+ if(create.style.display==='block'){
+  create.style.display='none';
+  levels.style.display='block';
+  create.setAttribute('aria-hidden','true');
+ } else {
+  create.style.display='block';
+  levels.style.display='none';
+  create.setAttribute('aria-hidden','false');
+ }
+}
+
+function showLevels(){
+ document.getElementById('createSection').style.display='none';
+ document.getElementById('createSection').setAttribute('aria-hidden','true');
+ document.getElementById('levelsSection').style.display='block';
+}
+
+function escapeHtml(s){
+ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');
+}
+
+async function addCard(){
+ const fTxt = document.getElementById('frontText').value.trim();
+ const bTxt = document.getElementById('backText').value.trim();
+ const fFile = document.getElementById('frontImg').files[0];
+ const bFile = document.getElementById('backImg').files[0];
+ let fImg="", bImg="";
+ if(fFile) fImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(fFile);});
+ if(bFile) bImg = await new Promise(r=>{const fr=new FileReader(); fr.onload=e=>r(e.target.result); fr.readAsDataURL(bFile);});
+ if(!fTxt && !bTxt && !fImg && !bImg){
+  alert("Ajoute du texte ou une image."); return;
+ }
+ deck.push({front:fTxt, back:bTxt, frontImg:fImg, backImg:bImg});
+ renderCardsPreview();
+ document.getElementById('frontText').value='';
+ document.getElementById('backText').value='';
+ document.getElementById('frontImg').value='';
+ document.getElementById('backImg').value='';
+}
+
+function renderCardsPreview(){
+ const list = document.getElementById('cardsList');
+ list.innerHTML='';
+ deck.forEach(c=>{
+  const div=document.createElement('div');
+  div.className='flashcard';
+  div.innerHTML=`<div class="flashcard-inner">
+   <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
+   <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
+  </div>`;
+  div.addEventListener('click',()=>div.classList.toggle('flipped'));
+  list.appendChild(div);
+ });
+ renderMathInElement(list, {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+    ]
+ });
+}
+
+document.getElementById('addCardBtn').addEventListener('click', addCard);
+
+/* ---------------- Mode révision avec confettis ----------------- */
+function shuffle(array){
+ for(let i=array.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [array[i],array[j]]=[array[j],array[i]];
+ }
+ return array;
+}
+
+document.getElementById('reviseBtn').addEventListener('click', ()=>{
+ if(deck.length===0){ alert("Aucune carte à réviser !"); return; }
+ const shuffled=[...deck]; shuffle(shuffled);
+ let idx=0, correct=0, incorrect=0;
+
+ const modal=document.createElement('div');
+ modal.className='modal'; modal.style.display='flex';
+ modal.innerHTML=`
+  <div class="card" style="max-width:500px;text-align:center;position:relative;">
+   <div class="close" id="closeRevise">✕</div>
+   <div id="reviseContent"></div>
+   <div id="reviewInfo" style="margin-top:10px;">Carte 1/${shuffled.length} | ✔️ 0 | ❌ 0</div>
+   <div id="reviewButtons" style="margin-top:12px;">
+    <button id="correctBtn" class="btn btn-add">Correcte</button>
+    <button id="incorrectBtn" class="btn btn-secondary">Incorrecte</button>
+   </div>
+  </div>`;
+ document.body.appendChild(modal);
+ const container=modal.querySelector('#reviseContent');
+ const infoDiv=modal.querySelector('#reviewInfo');
+
+ function updateInfo(){ infoDiv.textContent=`Carte ${idx+1}/${shuffled.length} | ✔️ ${correct} | ❌ ${incorrect}`; }
+
+ function showCard(i){
+  const c=shuffled[i];
+  container.innerHTML=`
+   <div class="flashcard" style="width:300px;height:180px;margin:auto;">
+    <div class="flashcard-inner">
+     <div class="front">${c.frontImg?`<img src="${c.frontImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.front||'')}</div>
+     <div class="back">${c.backImg?`<img src="${c.backImg}" style="max-width:90%;max-height:100px"><br>`:''}${escapeHtml(c.back||'')}</div>
+    </div>
+   </div>`;
+  const flash=container.querySelector('.flashcard');
+  flash.addEventListener('click',()=>flash.classList.toggle('flipped'));
+ }
+
+ showCard(idx);
+ updateInfo();
+
+ modal.querySelector('#correctBtn').onclick=()=>{ correct++; nextCard(); };
+ modal.querySelector('#incorrectBtn').onclick=()=>{ incorrect++; nextCard(); };
+ modal.querySelector('#closeRevise').onclick=()=>{ document.body.removeChild(modal); };
+
+ function nextCard(){
+  updateInfo();
+  idx++;
+  if(idx>=shuffled.length){ endRevision(); }
+  else { showCard(idx); }
+ }
+
+ function endRevision(){
+  updateInfo();
+
+  const recapSection = document.createElement('div');
+  recapSection.style.marginTop = '20px';
+  recapSection.innerHTML = `<h3>Récapitulatif des réponses</h3>`;
+  const list = document.createElement('ul');
+  shuffled.forEach((c,i)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `${escapeHtml(c.front||'')} → ${escapeHtml(c.back||'')} : ${i<correct ? '✔️ Correcte' : '❌ Incorrecte'}`;
+    list.appendChild(li);
+  });
+  recapSection.appendChild(list);
+
+  const createSec = document.getElementById('createSection');
+  createSec.appendChild(recapSection);
+  createSec.style.display = 'block';
+  document.getElementById('levelsSection').style.display='none';
+  createSec.setAttribute('aria-hidden','false');
+
+  if(correct===shuffled.length){
+    const confetti=document.createElement('div');
+    confetti.style.position='fixed';
+    confetti.style.top=0;
+    confetti.style.left=0;
+    confetti.style.width='100%';
+    confetti.style.height='100%';
+    confetti.style.pointerEvents='none';
+    confetti.style.zIndex=2000;
+    document.body.appendChild(confetti);
+
+    for(let i=0;i<150;i++){
+      const c=document.createElement('div');
+      c.style.position='absolute';
+      c.style.width='10px';
+      c.style.height='10px';
+      c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+      c.style.left=Math.random()*window.innerWidth+'px';
+      c.style.top=Math.random()*window.innerHeight+'px';
+      c.style.opacity=1;
+      c.style.transform=`rotate(${Math.random()*360}deg)`;
+      c.style.borderRadius='50%';
+      c.style.transition='transform 3s ease, top 3s ease, opacity 3s ease';
+      confetti.appendChild(c);
+      setTimeout(()=>{
+        c.style.top=window.innerHeight+'px';
+        c.style.opacity=0;
+        c.style.transform=`rotate(${Math.random()*720}deg)`;
+      },10);
     }
+    setTimeout(()=>{ document.body.removeChild(confetti); },3000);
+    alert("Félicitations ! Toutes les cartes sont correctes 🎉");
+  } else {
+    alert("Révision terminée !");
+  }
 
-    // --- Ajout de carte ---
-    async function addCard() {
-      const fTxt = document.getElementById('frontText').value.trim();
-      const bTxt = document.getElementById('backText').value.trim();
-      if (!fTxt && !bTxt) return alert("Ajoute du texte ou une image.");
-      deck.push({ front: fTxt, back: bTxt });
-      renderCardsPreview();
-    }
+  document.body.removeChild(modal);
+ }
+});
 
-    function renderCardsPreview() {
-      const list = document.getElementById('cardsList');
-      list.innerHTML = '';
-      deck.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'flashcard';
-        div.innerHTML = `
-          <div class="flashcard-inner">
-            <div class="front">${c.front}</div>
-            <div class="back">${c.back}</div>
-          </div>`;
-        div.addEventListener('click', () => div.classList.toggle('flipped'));
-        list.appendChild(div);
-        renderMath(div);
-      });
-    }
-
-    document.getElementById('addCardBtn').addEventListener('click', addCard);
-
-    // --- Mode révision avec cartes retournables ---
-    document.getElementById('reviseBtn').addEventListener('click', () => {
-      if (deck.length === 0) return alert("Aucune carte à réviser !");
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      modal.style.display = 'flex';
-      const cardDiv = document.createElement('div');
-      cardDiv.className = 'flashcard';
-      cardDiv.innerHTML = `
-        <div class="flashcard-inner">
-          <div class="front"></div>
-          <div class="back"></div>
-        </div>`;
-      const inner = cardDiv.querySelector('.flashcard-inner');
-      modal.appendChild(cardDiv);
-      document.body.appendChild(modal);
-      let i = 0;
-      showCard();
-
-      function showCard() {
-        const c = deck[i];
-        cardDiv.querySelector('.front').innerHTML = c.front;
-        cardDiv.querySelector('.back').innerHTML = c.back;
-        renderMath(cardDiv);
-        inner.classList.remove('flipped');
-      }
-
-      cardDiv.addEventListener('click', () => inner.classList.toggle('flipped'));
-      modal.addEventListener('click', e => {
-        if (e.target === modal) document.body.removeChild(modal);
-      });
-    });
-  </script>
+</script>
 </body>
 </html>
