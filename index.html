@@ -1,209 +1,311 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<title>Flashcards</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+  <meta charset="utf-8">
+  <title>Flashcards</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- KaTeX pour LaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body);"></script>
 
-<style>
-/* --- Styles globaux --- */
-:root{--orange-1:#ff9f1c;--orange-2:#ff6b35;--bg-a:#a8edea;--bg-b:#fed6e3;--card-shadow:0 8px 20px rgba(16,24,40,0.12);}
-html,body{height:100%;margin:0;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#222;
-background:linear-gradient(90deg,var(--bg-a),var(--bg-b));-webkit-font-smoothing:antialiased;}
-.hero{background:linear-gradient(90deg,var(--orange-1),var(--orange-2));color:white;padding:28px 20px 56px 20px;
-position:relative;overflow:visible;box-shadow:0 6px 20px rgba(0,0,0,0.08);}
-.hero-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.hero-left{display:flex;flex-direction:column;gap:6px;}
-.hero-left h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-0.6px;text-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.create-btn{background:white;color:var(--orange-2);border:none;padding:10px 16px;border-radius:999px;
-font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.12);transition:transform .14s ease;}
-.create-btn:hover{transform:translateY(-3px);}
-.container{max-width:1200px;margin:60px auto 40px;padding:0 18px;}
-.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
-.level-card{background:white;border-radius:16px;padding:20px;display:flex;gap:12px;align-items:center;
-box-shadow:var(--card-shadow);cursor:pointer;transition:transform .16s ease, box-shadow .16s ease;}
-.level-card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(16,24,40,0.12);}
-.icon-square{width:72px;height:72px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-color:white;font-size:28px;}
-.icon-blue{background:linear-gradient(180deg,#4e73df,#6c8cff);}
-.icon-teal{background:linear-gradient(180deg,#06b6d4,#3dd6e9);}
-.icon-green{background:linear-gradient(180deg,#16a34a,#4ade80);}
-.icon-amber{background:linear-gradient(180deg,#f59e0b,#fbbf24);}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;z-index:60;}
-.modal .card{background:white;border-radius:12px;padding:20px;width:min(420px,92%);box-shadow:var(--card-shadow);position:relative;}
-.flashcard{width:220px;height:140px;perspective:1000px;cursor:pointer;}
-.flashcard-inner{width:100%;height:100%;position:relative;transition:transform .6s;transform-style:preserve-3d;}
-.flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
-.front,.back{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;display:flex;
-align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:600;box-shadow:0 6px 14px rgba(0,0,0,0.08);}
-.front{background:linear-gradient(180deg,#ffffff,#fff7ef);}
-.back{background:linear-gradient(180deg,#eef7ff,#e6f0ff);transform:rotateY(180deg);}
-.btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;}
-.btn-add{background:linear-gradient(90deg,var(--orange-1),var(--orange-2));color:white;}
-.btn-secondary{background:#f3f4f6;color:#111;}
-.close{cursor:pointer;font-size:18px;background:none;border:none;}
-</style>
+  <style>
+    :root {
+      --orange-1: #ff9f1c;
+      --orange-2: #ff6b35;
+      --bg-a: #a8edea;
+      --bg-b: #fed6e3;
+      --card-shadow: 0 8px 20px rgba(16,24,40,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #222;
+      background: linear-gradient(90deg, var(--bg-a), var(--bg-b));
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main { flex: 1; }
+
+    .hero {
+      background: linear-gradient(90deg, var(--orange-1), var(--orange-2));
+      color: white;
+      padding: 28px 20px 56px 20px;
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hero-left .small { font-size: 14px; opacity: 0.95; letter-spacing: 0.6px; }
+    .hero-left h1 { margin: 0; font-size: 34px; line-height: 1; font-weight: 700; }
+
+    .hero .create-btn {
+      background: rgba(255,255,255,0.98);
+      color: var(--orange-2);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      transition: transform .14s ease;
+      margin-left: 6px;
+    }
+    .hero .create-btn:hover { transform: translateY(-3px); }
+
+    .hero-art {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -28px;
+      display: flex;
+      gap: -28px;
+      pointer-events: none;
+    }
+
+    .mini-card {
+      width: 120px; height: 72px; border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      font-weight: 600; color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 60px auto 40px; padding: 0 18px; }
+
+    .levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; }
+
+    .level-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .level-card:hover { transform: translateY(-6px); }
+
+    .icon-square {
+      width: 72px; height: 72px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 28px;
+    }
+
+    #createSection { display: none; max-width: 980px; margin: 26px auto; padding: 18px; }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #e6e6e9;
+      resize: vertical;
+      font-size: 14px;
+    }
+
+    .flashcard {
+      width: 220px;
+      height: 140px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform .6s;
+      transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .front, .back {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      overflow-wrap: break-word;
+    }
+
+    .front { background: #fff7ef; }
+    .back { background: #e6f0ff; transform: rotateY(180deg); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+    }
+
+  </style>
 </head>
 
 <body>
-<header class="hero">
- <div class="hero-inner">
-  <div class="hero-left"><div class="small">Les cartes</div><h1>Flashcards</h1></div>
-  <div><button class="create-btn" onclick="showLevels()">📚 Étudier</button>
-       <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button></div>
- </div>
-</header>
+  <header class="hero" role="banner">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="small">Les cartes</div>
+        <h1>Flashcards</h1>
+      </div>
+      <div>
+        <button class="create-btn" onclick="showLevels()">📚 Étudier</button>
+        <button class="create-btn" onclick="toggleCreate()">✏️ Créer</button>
+      </div>
+    </div>
+  </header>
 
-<main class="container">
- <section id="levelsSection">
-  <div class="levels" id="levelsGrid">
-   <article class="level-card" onclick="openModal('Seconde')">
-    <div class="icon-square icon-blue">S</div>
-    <div class="level-body"><h3>Seconde</h3><p class="muted">Bases / Fonctions / Géométrie</p></div>
-   </article>
+  <main class="container">
+    <section id="levelsSection">
+      <div class="levels" id="levelsGrid"></div>
+    </section>
+
+    <section id="createSection">
+      <h2>Créer / Réviser les cartes</h2>
+      <label class="muted">Recto</label>
+      <textarea id="frontText" placeholder="Texte recto (LaTeX possible avec $...$)"></textarea>
+      <input id="frontImg" type="file" accept="image/*">
+      <label class="muted">Verso</label>
+      <textarea id="backText" placeholder="Texte verso (LaTeX possible avec $...$)"></textarea>
+      <input id="backImg" type="file" accept="image/*">
+
+      <div class="controls">
+        <button class="btn btn-add" id="addCardBtn">Ajouter la carte</button>
+        <button class="btn btn-secondary" id="exportBtn">Exporter JSON</button>
+        <button class="btn btn-secondary" id="importBtn">Importer JSON</button>
+        <button class="btn btn-add" id="reviseBtn">Réviser</button>
+      </div>
+
+      <div id="cardsList"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="chapterModal">
+    <div class="card">
+      <div class="close" onclick="closeModal()">✕</div>
+      <h2 id="modalTitle">Chapitres</h2>
+      <ul class="chapter-list" id="chapterList"></ul>
+      <button class="start-btn" onclick="startRevision()">▶️ Commencer</button>
+    </div>
   </div>
- </section>
 
- <section id="createSection" style="display:none;">
-  <h2>Créer / Réviser les cartes</h2>
-  <label>Recto</label><textarea id="frontText"></textarea>
-  <label>Verso</label><textarea id="backText"></textarea>
-  <div class="controls">
-   <button class="btn btn-add" id="addCardBtn">Ajouter</button>
-   <button class="btn btn-add" id="reviseBtn">Réviser</button>
-  </div>
-  <div id="cardsList"></div>
- </section>
-</main>
+  <script>
+    // --- Données des niveaux et chapitres ---
+    const chapters = {
+      "Seconde": ["Chapitre 1 : Bases"]
+    };
+    const chapterDecks = {
+      "Seconde Chapitre 1 : Bases": [
+        { front: "f(x)=x^2", back: "\\text{dérivée } 2x" },
+        { front: "(a+b)^2", back: "a^2 + 2ab + b^2" },
+        { front: "\\sin^2\\theta + \\cos^2\\theta", back: "1" }
+      ]
+    };
 
-<div class="modal" id="chapterModal">
- <div class="card">
-  <div class="close" onclick="closeModal()">✕</div>
-  <h2 id="modalTitle">Chapitres</h2>
-  <ul class="chapter-list" id="chapterList"></ul>
-  <button class="btn btn-add" onclick="startRevision()">▶️ Commencer</button>
- </div>
-</div>
+    let deck = [];
 
-<script>
-const chapters={"Seconde":["Chapitre 1 : Bases","Chapitre 2 : Fonctions","Chapitre 3 : Géométrie"]};
-const chapterDecks={
- "Seconde Chapitre 1 : Bases":[
-   {front:"f(x)=x^2",back:"dérivée 2x"},
-   {front:"(a+b)^2",back:"a^2+2ab+b^2"},
-   {front:"sin²x+cos²x",back:"1"}
- ]
-};
-let currentLevel=null,selectedChapter=null,deck=[];
+    function renderMath(container) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false }
+        ]
+      });
+    }
 
-function openModal(level){
- currentLevel=level;
- document.getElementById('modalTitle').textContent=level;
- const list=document.getElementById('chapterList');list.innerHTML='';
- (chapters[level]||[]).forEach(ch=>{
-  const li=document.createElement('li');li.textContent=ch;
-  li.onclick=()=>{selectedChapter=ch;Array.from(list.children).forEach(c=>c.style.background='');
-  li.style.background='#dfefff';};
-  list.appendChild(li);
- });
- document.getElementById('chapterModal').style.display='flex';
-}
-function closeModal(){document.getElementById('chapterModal').style.display='none';}
-function toggleCreate(){
- const c=document.getElementById('createSection');
- const l=document.getElementById('levelsSection');
- if(c.style.display==='block'){c.style.display='none';l.style.display='block';}
- else{c.style.display='block';l.style.display='none';}
-}
-function showLevels(){document.getElementById('createSection').style.display='none';
-document.getElementById('levelsSection').style.display='block';}
+    // --- Ajout de carte ---
+    async function addCard() {
+      const fTxt = document.getElementById('frontText').value.trim();
+      const bTxt = document.getElementById('backText').value.trim();
+      if (!fTxt && !bTxt) return alert("Ajoute du texte ou une image.");
+      deck.push({ front: fTxt, back: bTxt });
+      renderCardsPreview();
+    }
 
-function startRevision(){
- if(!selectedChapter){alert("Choisis un chapitre");return;}
- const key=currentLevel+" "+selectedChapter;
- deck=chapterDecks[key]||[];
- if(deck.length===0){alert("Aucune carte");return;}
- renderCardsPreview();toggleCreate();closeModal();
-}
+    function renderCardsPreview() {
+      const list = document.getElementById('cardsList');
+      list.innerHTML = '';
+      deck.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'flashcard';
+        div.innerHTML = `
+          <div class="flashcard-inner">
+            <div class="front">${c.front}</div>
+            <div class="back">${c.back}</div>
+          </div>`;
+        div.addEventListener('click', () => div.classList.toggle('flipped'));
+        list.appendChild(div);
+        renderMath(div);
+      });
+    }
 
-function escapeHtml(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\n','<br>');}
-function renderCardsPreview(){
- const list=document.getElementById('cardsList');list.innerHTML='';
- deck.forEach(c=>{
-  const div=document.createElement('div');div.className='flashcard';
-  div.innerHTML=`<div class="flashcard-inner"><div class="front">${escapeHtml(c.front)}</div><div class="back">${escapeHtml(c.back)}</div></div>`;
-  div.onclick=()=>div.classList.toggle('flipped');
-  list.appendChild(div);
- });
- renderMathInElement(list);
-}
+    document.getElementById('addCardBtn').addEventListener('click', addCard);
 
-document.getElementById('addCardBtn').onclick=()=>{
- const f=document.getElementById('frontText').value.trim();
- const b=document.getElementById('backText').value.trim();
- if(!f&&!b){alert("Ajoute du texte");return;}
- deck.push({front:f,back:b});
- document.getElementById('frontText').value='';document.getElementById('backText').value='';
- renderCardsPreview();
-};
+    // --- Mode révision avec cartes retournables ---
+    document.getElementById('reviseBtn').addEventListener('click', () => {
+      if (deck.length === 0) return alert("Aucune carte à réviser !");
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'flex';
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'flashcard';
+      cardDiv.innerHTML = `
+        <div class="flashcard-inner">
+          <div class="front"></div>
+          <div class="back"></div>
+        </div>`;
+      const inner = cardDiv.querySelector('.flashcard-inner');
+      modal.appendChild(cardDiv);
+      document.body.appendChild(modal);
+      let i = 0;
+      showCard();
 
-/* -------- MODE RÉVISION -------- */
-document.getElementById('reviseBtn').addEventListener('click',startRevisionMode);
-function startRevisionMode(){
- if(deck.length===0){alert("Aucune carte à réviser");return;}
- const shuffled=[...deck].sort(()=>Math.random()-0.5);
- let idx=0,correct=0,incorrect=0;
+      function showCard() {
+        const c = deck[i];
+        cardDiv.querySelector('.front').innerHTML = c.front;
+        cardDiv.querySelector('.back').innerHTML = c.back;
+        renderMath(cardDiv);
+        inner.classList.remove('flipped');
+      }
 
- const modal=document.createElement('div');
- modal.className='modal';modal.style.display='flex';
- const card=document.createElement('div');
- card.className='card';card.style.textAlign='center';card.style.position='relative';
- const inner=document.createElement('div');inner.className='flashcard-inner';
- const front=document.createElement('div');front.className='front';
- const back=document.createElement('div');back.className='back';
- inner.appendChild(front);inner.appendChild(back);
- const fc=document.createElement('div');fc.className='flashcard';fc.appendChild(inner);
- fc.onclick=()=>fc.classList.toggle('flipped');
- const btns=document.createElement('div');btns.style.marginTop='12px';
- const ok=document.createElement('button');ok.textContent='✔️ Correct';ok.className='btn btn-add';
- const no=document.createElement('button');no.textContent='❌ Faux';no.className='btn btn-secondary';
- btns.appendChild(ok);btns.appendChild(no);
- const close=document.createElement('button');close.textContent='✕';close.className='close';
- close.style.position='absolute';close.style.top='8px';close.style.right='10px';
- close.onclick=()=>document.body.removeChild(modal);
- card.append(close,fc,btns);modal.appendChild(card);document.body.appendChild(modal);
-
- function showCard(i){
-  const c=shuffled[i];
-  front.innerHTML=escapeHtml(c.front);back.innerHTML=escapeHtml(c.back);
-  inner.classList.remove('flipped');renderMathInElement(front);renderMathInElement(back);
- }
- function next(isOk){if(isOk)correct++;else incorrect++;idx++;if(idx>=shuffled.length)end();else showCard(idx);}
- function end(){
-  if(correct===shuffled.length){
-   const confetti=document.createElement('div');confetti.style.position='fixed';confetti.style.top=0;
-   confetti.style.left=0;confetti.style.width='100%';confetti.style.height='100%';
-   confetti.style.pointerEvents='none';confetti.style.zIndex=9999;document.body.appendChild(confetti);
-   for(let i=0;i<120;i++){const c=document.createElement('div');
-    c.style.position='absolute';c.style.width='10px';c.style.height='10px';
-    c.style.background=`hsl(${Math.random()*360},100%,50%)`;
-    c.style.left=Math.random()*window.innerWidth+'px';
-    c.style.top=Math.random()*window.innerHeight+'px';
-    c.style.transition='top 3s ease,opacity 3s ease';confetti.appendChild(c);
-    setTimeout(()=>{c.style.top=window.innerHeight+'px';c.style.opacity=0;},10);}
-   setTimeout(()=>document.body.removeChild(confetti),3000);
-   alert("🎉 Félicitations, tout est correct !");
-  }else alert("Révision terminée !");
-  document.body.removeChild(modal);
- }
- ok.onclick=()=>next(true);
- no.onclick=()=>next(false);
- showCard(idx);
-}
-</script>
+      cardDiv.addEventListener('click', () => inner.classList.toggle('flipped'));
+      modal.addEventListener('click', e => {
+        if (e.target === modal) document.body.removeChild(modal);
+      });
+    });
+  </script>
 </body>
 </html>
