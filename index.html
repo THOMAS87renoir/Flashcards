@@ -544,6 +544,8 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
    </div>`;
   const flash=container.querySelector('.flashcard');
   flash.addEventListener('click',()=>flash.classList.toggle('flipped'));
+  renderMathInElement(container);
+
  }
 
  showCard(idx);
@@ -623,3 +625,4 @@ document.getElementById('reviseBtn').addEventListener('click', ()=>{
 </script>
 </body>
 </html>
+
